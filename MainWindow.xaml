@@ -1,0 +1,175 @@
+﻿<Window x:Class="Ai_Project.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Ai_Project"
+        mc:Ignorable="d"
+        Title="AI" MinHeight="480" MinWidth="850">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid Background="{StaticResource PrimaryBg}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="278px"/>
+                    <RowDefinition Height="27px"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Border Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <DockPanel>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Icon:PackIconMaterial Kind="Collage"
+                                                   Background="Transparent"
+                                                   Foreground="{StaticResource PrimaryFg}"
+                                                   VerticalAlignment="Center" 
+                                                   HorizontalAlignment="Right" 
+                                                   Margin="0 0 8px 0"
+                                                   Cursor="Hand"
+                                                   ToolTip="Collapse"/>
+
+                            <Grid x:Name="NewChatGrid" Grid.Row="1" Background="{StaticResource PrimaryBg}" HorizontalAlignment="Stretch" Cursor="Hand">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="56px"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Icon:PackIconMaterial Kind="PencilBox" HorizontalAlignment="Center" VerticalAlignment="Center" Height="18px" Width="18px" Foreground="{StaticResource FifthBg}"/>
+                                <TextBlock x:Name="NewChatTextBlock" Grid.Column="1" Text="New chat" VerticalAlignment="Center" FontSize="21px" Foreground="{StaticResource PrimaryFg}"/>
+                            </Grid>
+
+                            <Grid x:Name="ModelsGrid" Grid.Row="2" Background="{StaticResource PrimaryBg}" HorizontalAlignment="Stretch" Cursor="Hand">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="56px"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Icon:PackIconMaterial Kind="Database"  HorizontalAlignment="Center" VerticalAlignment="Center" Width="18px" Height="18px" Foreground="{StaticResource SecondaryBg}"/>
+                                <TextBlock x:Name="ModelsTextBlock" Grid.Column="1" Text="Models" VerticalAlignment="Center" FontSize="21" Foreground="{StaticResource PrimaryFg}"/>
+                            </Grid>
+
+                            <Grid x:Name="SettingsGrid" Grid.Row="3" Background="{StaticResource PrimaryBg}" HorizontalAlignment="Stretch" Cursor="Hand">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="56px"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Icon:PackIconMaterial Kind="Cog"  HorizontalAlignment="Center" VerticalAlignment="Center" Width="18px" Height="18px" Foreground="{StaticResource ThirdBg}"/>
+                                <TextBlock x:Name="SettingsTextBlock" Grid.Column="1" Text="Settings" VerticalAlignment="Center" FontSize="21px" Foreground="{StaticResource PrimaryFg}"/>
+                            </Grid>
+
+                        </Grid>
+                    </DockPanel>
+                </Border>
+                <TextBlock Grid.Row="1" Text="History" 
+                       Foreground="{StaticResource PrimaryFg}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14px"/>
+                <Border Grid.Row="2" Margin="5 5 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid x:Name="HistoryGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="1" Margin="5 27 5 0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="124px"/>
+            </Grid.RowDefinitions>
+            <Border MinWidth="525px" MaxWidth="850">
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <ScrollViewer x:Name="PromptMessagesScroll" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="PromptMessagesPanel" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <TextBox x:Name="PromptResponse"
+                                             Margin="8px"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             IsReadOnly="True"
+                                             FontSize="14px"
+                                             HorizontalAlignment="Stretch" 
+                                             VerticalAlignment="Stretch"
+                                             AcceptsReturn="False"
+                                             TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+            <Border  Grid.RowSpan="2" x:Name="UserPrompt"
+                     CornerRadius="28" MinWidth="525px" 
+                     MaxWidth="850" Margin="15"
+                     MinHeight="90px" MaxHeight="340px"
+                     BorderThickness="1" BorderBrush="DarkGray"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="15px">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="27px"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="43px"/>
+                    </Grid.ColumnDefinitions>
+                    <Icon:PackIconMaterial Kind="Plus" Cursor="Hand" 
+                                           Foreground="Gray" 
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center"
+                                           Background="Transparent"/>
+                    <TextBlock Grid.Column="1" 
+                               Text="Ask anything . . ." 
+                               FontSize="16" 
+                               Foreground="Gray" 
+                               IsHitTestVisible="False"
+                               HorizontalAlignment="Left" 
+                               VerticalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <!-- Show TextBlock only when the TextBox is empty -->
+                                    <DataTrigger Binding="{Binding Text.Length, ElementName=QueryTextBox}" Value="0">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBox x:Name="QueryTextBox" Grid.Column="1"
+                             FontSize="16px"
+                             Margin="0 0 13 0"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             AcceptsReturn="False"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                             KeyDown="QueryTextBox_KeyDown"/>
+
+                    <Icon:PackIconMaterial x:Name="SendButton" Kind="ArrowUpCircle" Cursor="Hand"
+                                           Grid.Column="2"
+                                           Width="43"
+                                           Height="43"
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center"
+                                           Background="Transparent">
+                        <Icon:PackIconMaterial.Style>
+                            <Style TargetType="Icon:PackIconMaterial">
+                                <Setter Property="Foreground" Value="Black"/>
+                                <Setter Property="IsEnabled" Value="True"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text.Length, ElementName=QueryTextBox}" Value="0">
+                                        <Setter Property="Foreground" Value="LightGray"/>
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Icon:PackIconMaterial.Style>
+                    </Icon:PackIconMaterial>
+                </Grid>
+            </Border>
+            
+        </Grid>
+    </Grid>
+</Window>
