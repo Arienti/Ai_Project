@@ -1,5 +1,7 @@
-﻿using MahApps.Metro.IconPacks;
+﻿using Ai_Project.Services;
+using MahApps.Metro.IconPacks;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -18,6 +20,7 @@ namespace Ai_Project
         SolidColorBrush PrimaryBg = ((SolidColorBrush)App.Current.Resources["PrimaryBg"]);
         SolidColorBrush PrimaryBgHover = ((SolidColorBrush)App.Current.Resources["PrimaryBgHover"]);
         SolidColorBrush PrimaryFg = ((SolidColorBrush)App.Current.Resources["PrimaryFg"]);
+        private readonly OllamaService _OllamaService;
         public class NavBarControl
         {
             public TextBlock Text { get; set; }
@@ -26,7 +29,7 @@ namespace Ai_Project
             public bool isActive = false;
         }
         List<NavBarControl>? NavBarControls = null;
-        public MainWindow()
+        public MainWindow(OllamaService ollamaService)
         {
             InitializeComponent();
             AddNavbarControls(NewChatGrid, NewChatTextBlock, null);
@@ -40,8 +43,7 @@ namespace Ai_Project
 
             // Assign fixed text to the TextBox
             PromptResponse.Text = fixedText;
-
-
+            _OllamaService = ollamaService;
         }
 
         private void AddNavbarControls(Grid grid, TextBlock textBlock, Page? page)
@@ -148,12 +150,13 @@ namespace Ai_Project
             icon.Visibility = Visibility.Collapsed;
         }
 
-        private void QueryTextBox_KeyDown(object sender, KeyEventArgs e)
+        private async void QueryTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter && !string.IsNullOrEmpty(QueryTextBox.Text))
             {
-                BuildQueryMessage(QueryTextBox.Text);
-                QueryTextBox.Text = string.Empty;
+                //BuildQueryMessage(QueryTextBox.Text);
+                string response = await _OllamaService.GenerateResponseAsync(QueryTextBox.Text);
+                PromptResponse.Text = response;
             }
         }
         private void BuildQueryMessage(string queryText)
