@@ -31,8 +31,8 @@
                             <Icon:PackIconMaterial Kind="Collage"
                                                    Background="Transparent"
                                                    Foreground="{StaticResource PrimaryFg}"
-                                                   VerticalAlignment="Center" 
-                                                   HorizontalAlignment="Right" 
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right"
                                                    Margin="0 0 8px 0"
                                                    Cursor="Hand"
                                                    ToolTip="Collapse"/>
@@ -67,9 +67,9 @@
                         </Grid>
                     </DockPanel>
                 </Border>
-                <TextBlock Grid.Row="1" Text="History" 
+                <TextBlock Grid.Row="1" Text="Charts history"
                        Foreground="{StaticResource PrimaryFg}"
-                       HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14px"/>
+                       HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="21px"/>
                 <Border Grid.Row="2" Margin="5 5 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid x:Name="HistoryGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
@@ -92,7 +92,7 @@
                                              BorderThickness="0"
                                              IsReadOnly="True"
                                              FontSize="14px"
-                                             HorizontalAlignment="Stretch" 
+                                             HorizontalAlignment="Stretch"
                                              VerticalAlignment="Stretch"
                                              AcceptsReturn="False"
                                              TextWrapping="Wrap"/>
@@ -101,7 +101,7 @@
                 </Grid>
             </Border>
             <Border  Grid.RowSpan="2" x:Name="UserPrompt"
-                     CornerRadius="28" MinWidth="525px" 
+                     CornerRadius="28" MinWidth="525px"
                      MaxWidth="850" Margin="15"
                      MinHeight="90px" MaxHeight="340px"
                      BorderThickness="1" BorderBrush="DarkGray"
@@ -112,17 +112,17 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="43px"/>
                     </Grid.ColumnDefinitions>
-                    <Icon:PackIconMaterial Kind="Plus" Cursor="Hand" 
-                                           Foreground="Gray" 
-                                           HorizontalAlignment="Center" 
+                    <Icon:PackIconMaterial Kind="Plus" Cursor="Hand"
+                                           Foreground="Gray"
+                                           HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
                                            Background="Transparent"/>
-                    <TextBlock Grid.Column="1" 
-                               Text="Ask anything . . ." 
-                               FontSize="16" 
-                               Foreground="Gray" 
+                    <TextBlock Grid.Column="1"
+                               Text="Ask anything . . ."
+                               FontSize="16"
+                               Foreground="Gray"
                                IsHitTestVisible="False"
-                               HorizontalAlignment="Left" 
+                               HorizontalAlignment="Left"
                                VerticalAlignment="Center">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
@@ -151,7 +151,7 @@
                                            Grid.Column="2"
                                            Width="43"
                                            Height="43"
-                                           HorizontalAlignment="Center" 
+                                           HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
                                            Background="Transparent">
                         <Icon:PackIconMaterial.Style>
@@ -169,7 +169,7 @@
                     </Icon:PackIconMaterial>
                 </Grid>
             </Border>
-            
+
         </Grid>
     </Grid>
 </Window>
