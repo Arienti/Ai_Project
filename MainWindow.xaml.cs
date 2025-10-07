@@ -1,190 +1,211 @@
-﻿using Ai_Project.Services;
-using MahApps.Metro.IconPacks;
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using Ai_Project.Content;
+using Ai_Project.Utility;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Threading;
 
 namespace Ai_Project
 {
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
     public partial class MainWindow : Window
     {
-        // ========== Colors from App.xaml Resources ==========
-        private readonly SolidColorBrush PrimaryBg = (SolidColorBrush)Application.Current.Resources["PrimaryBg"];
-        private readonly SolidColorBrush PrimaryBgHover = (SolidColorBrush)Application.Current.Resources["PrimaryBgHover"];
-        private readonly SolidColorBrush PrimaryFg = (SolidColorBrush)Application.Current.Resources["PrimaryFg"];
+        SolidColorBrush PrimaryBg = ((SolidColorBrush)App.Current.Resources["PrimaryBg"]);
+        SolidColorBrush PrimaryBgHover = ((SolidColorBrush)App.Current.Resources["PrimaryBgHover"]);
+        SolidColorBrush PrimaryFg = ((SolidColorBrush)App.Current.Resources["PrimaryFg"]);
+        public class NavBarControl
+        {
+            public TextBlock? Text { get; set; }
+            public Page? Page { get; set; }
+            public Grid? grid { get; set; }
+            public bool isActive = false;
+        }
+        List<NavBarControl>? NavBarControls = null;
 
-        private readonly OllamaService _ollamaService;
-        private readonly List<NavBarItem> _navBarItems = new();
-
-        // =====================================================
-        public MainWindow(OllamaService ollamaService)
+        ChatPage chatPage = new ChatPage();
+        ModelsPage modelsPage = new ModelsPage();
+        SettingsPage settingsPage = new SettingsPage();
+        public MainWindow()
         {
             InitializeComponent();
-            _ollamaService = ollamaService;
 
-            // Initialize navbar
-            AddNavbarItem(NewChatGrid, NewChatTextBlock);
-            AddNavbarItem(ModelsGrid, ModelsTextBlock);
-            AddNavbarItem(SettingsGrid, SettingsTextBlock);
-
-            // Example initialization text (unescaped)
-            string rawResponse = "Sure, here's an example...\\n\\n```csharp\\nConsole.WriteLine(\"Hello\");```";
-            PromptResponse.Text = Regex.Unescape(rawResponse);
+            AddNavbarControls(NewChatGrid, NewChatTextBlock, chatPage);
+            AddNavbarControls(ModelsGrid, ModelsTextBlock, modelsPage);
+            AddNavbarControls(SettingsGrid, SettingsTextBlock, settingsPage);
         }
 
-        // =====================================================
-        #region Navbar Logic
-
-        private void AddNavbarItem(Grid grid, TextBlock textBlock)
+        private void AddNavbarControls(Grid grid, TextBlock textBlock, Page? page)
         {
-            var item = new NavBarItem(grid, textBlock);
-            _navBarItems.Add(item);
-
-            grid.Tag = item;
-            grid.MouseLeftButtonUp += NavBar_MouseLeftButtonUp;
-            grid.MouseEnter += NavBar_MouseEnter;
-            grid.MouseLeave += NavBar_MouseLeave;
-        }
-
-        private void NavBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is not Grid grid || grid.Tag is not NavBarItem clicked) return;
-            SetActiveNavBar(clicked);
-        }
-
-        private void NavBar_MouseEnter(object sender, MouseEventArgs e)
-        {
-            if (sender is not Grid grid || grid.Tag is not NavBarItem item) return;
-            if (!item.IsActive)
-                AnimateBackground(item.Grid, PrimaryBgHover.Color);
-        }
-
-        private void NavBar_MouseLeave(object sender, MouseEventArgs e)
-        {
-            if (sender is not Grid grid || grid.Tag is not NavBarItem item) return;
-            if (!item.IsActive)
-                AnimateBackground(item.Grid, PrimaryBg.Color);
-        }
-
-        private void SetActiveNavBar(NavBarItem activeItem)
-        {
-            foreach (var item in _navBarItems)
+            if (NavBarControls == null)
             {
-                item.IsActive = item == activeItem;
-                item.Grid.Background = new SolidColorBrush(item.IsActive ? PrimaryBgHover.Color : PrimaryBg.Color);
-                item.Text.Foreground = item.IsActive ? Brushes.White : PrimaryFg;
-                item.Text.FontWeight = item.IsActive ? FontWeights.SemiBold : FontWeights.Normal;
+                NavBarControls = new List<NavBarControl>();
+            }
+            NavBarControl NavBarControl = new NavBarControl() { grid = grid, Text = textBlock, Page = page };
+            NavBarControls.Add(NavBarControl);
+            NavBarControl.grid.Tag = NavBarControl;
+            NavBarControl.grid.MouseLeftButtonUp += NavBarControl_MouseLeftButtonUp;
+            NavBarControl.grid.MouseEnter += NavBarControl_MouseEnter;
+            NavBarControl.grid.MouseLeave += NavBarControl_MouseLeave;
+            NavBarControl.grid.PreviewMouseUp += NavBarControl_PreviewMouseUp;
+
+            if (NavBarControl.grid.Name.Equals("NewChatGrid"))
+            {
+                SetActiveNavBarControl(NavBarControl);
             }
         }
 
-        private static void AnimateBackground(Grid grid, Color targetColor)
+        private void NavBarControl_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            var currentColor = ((SolidColorBrush)grid.Background).Color;
-            var animation = new ColorAnimation
+            NavBarControl? navBarControl = (sender as Grid)?.Tag as NavBarControl;
+            if (navBarControl == null || navBarControl.isActive)
             {
-                From = currentColor,
-                To = targetColor,
-                Duration = TimeSpan.FromMilliseconds(300),
-                EasingFunction = new QuadraticEase()
-            };
-
-            var animatedBrush = new SolidColorBrush(currentColor);
-            grid.Background = animatedBrush;
-            animatedBrush.BeginAnimation(SolidColorBrush.ColorProperty, animation);
-        }
-
-        #endregion
-
-        // =====================================================
-        #region Ollama Query Handling
-
-        private async void QueryTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key != Key.Enter || string.IsNullOrWhiteSpace(QueryTextBox.Text))
                 return;
-
-            string query = QueryTextBox.Text.Trim();
-            QueryTextBox.Clear();
-            PromptResponse.Text = "Thinking...";
-
-            try
-            {
-                string response = await _ollamaService.GenerateResponseAsync(query);
-                PromptResponse.Text = Regex.Unescape(response);
             }
-            catch (Exception ex)
+            SetActiveNavBarControl(navBarControl);
+        }
+
+        private void NavBarControl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            base.Dispatcher.Invoke(() =>
             {
-                PromptResponse.Text = $"⚠️ Error: {ex.Message}";
-            }
-        }
-
-        #endregion
-
-        // =====================================================
-        #region Hover Effects
-
-        private void PromptQueryBorder_MouseEnter(object sender, MouseEventArgs e)
-        {
-            if (sender is Border border && border.Tag is PackIconMaterial icon)
-                icon.Visibility = Visibility.Visible;
-        }
-
-        private void PromptQueryBorder_MouseLeave(object sender, MouseEventArgs e)
-        {
-            if (sender is Border border && border.Tag is PackIconMaterial icon)
-                icon.Visibility = Visibility.Collapsed;
-        }
-
-        #endregion
-
-        // =====================================================
-        #region Smooth Scroll
-
-        private void SmoothScrollToEnd(ScrollViewer scroll)
-        {
-            if (scroll.ScrollableHeight == 0) return;
-
-            var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(10) };
-
-            timer.Tick += (s, e) =>
-            {
-                double current = scroll.VerticalOffset;
-                double target = scroll.ScrollableHeight;
-                double next = Math.Min(current + 200, target);
-
-                scroll.ScrollToVerticalOffset(next);
-
-                if (next >= target)
+                NavBarControl? navBarControl = (sender as Grid)?.Tag as NavBarControl;
+                if (navBarControl == null || navBarControl.Text == null)
                 {
-                    timer.Stop();
-                    scroll.ScrollToEnd();
+                    return;
                 }
-            };
-
-            timer.Start();
+                SetActiveNavBarControl(navBarControl);
+                navBarControl.Text.Foreground = Brushes.White;
+            });
         }
 
-        #endregion
-    }
-
-    // =====================================================
-    public class NavBarItem
-    {
-        public Grid Grid { get; }
-        public TextBlock Text { get; }
-        public bool IsActive { get; set; }
-
-        public NavBarItem(Grid grid, TextBlock text)
+        private void NavBarControl_MouseEnter(object sender, MouseEventArgs e)
         {
-            Grid = grid;
-            Text = text;
+            base.Dispatcher.Invoke(() =>
+            {
+                NavBarControl? navBarControl = (sender as Grid)?.Tag as NavBarControl;
+                if (navBarControl != null && !navBarControl.isActive)
+                {
+                    ColorAnimation colorAnimation = new ColorAnimation
+                    {
+                        To = PrimaryBgHover.Color,
+                        Duration = new Duration(TimeSpan.FromMilliseconds(300))
+                    };
+                    navBarControl.grid.Background = new SolidColorBrush(((SolidColorBrush)navBarControl.grid.Background).Color);
+                    navBarControl.grid.Background.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
+                }
+            });
         }
+
+        private void NavBarControl_MouseLeave(object sender, MouseEventArgs e)
+        {
+            base.Dispatcher.Invoke(() =>
+            {
+                NavBarControl? navBarControl = (sender as Grid)?.Tag as NavBarControl;
+                if (navBarControl != null && !navBarControl.isActive)
+                {
+                    ColorAnimation colorAnimation = new ColorAnimation
+                    {
+                        To = PrimaryBg.Color,
+                        Duration = new Duration(TimeSpan.FromMilliseconds(300))
+                    };
+                    navBarControl.grid.Background = new SolidColorBrush(((SolidColorBrush)navBarControl.grid.Background).Color);
+                    navBarControl.grid.Background.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
+                }
+            });
+        }
+
+        private void SetActiveNavBarControl(NavBarControl control)
+        {
+            if (NavBarControls == null) return;
+            foreach (var navControl in NavBarControls)
+            {
+                if (navControl == control)
+                {
+                    navControl.isActive = true;
+                    navControl.grid.Background = PrimaryBgHover;
+                    navControl.Text.Foreground = Brushes.White;
+                    navControl.Text.FontWeight = FontWeights.SemiBold;
+                }
+                else
+                {
+                    navControl.isActive = false;
+                    navControl.grid.Background = PrimaryBg;
+                    navControl.Text.Foreground = PrimaryFg;
+                    navControl.Text.FontWeight = FontWeights.Normal;
+                }
+            }
+            MainFrame.Content = control.Page;
+            if (control.Page as InitializablePage != null)
+            {
+                (control.Page as InitializablePage).Init();
+            }
+        }
+
+        private void Border_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            bool navBarCollapsed = NavBarGrid.Width == 47;
+            double widthTarget = navBarCollapsed ? 200 : 47;
+            DoubleAnimation animation = new DoubleAnimation
+            {
+                From = NavBarGrid.ActualWidth,
+                To = widthTarget,
+                Duration = TimeSpan.FromMilliseconds(300)
+            };
+            if (navBarCollapsed)
+            {
+                CollapseNavBarBorder.HorizontalAlignment = HorizontalAlignment.Right;
+                CollapseNavBarBorder.Margin = new Thickness(0, 6, 4, 6);
+                CollapseNavBarBorder.ToolTip = "Collapse";
+                HistoryGrid.Visibility =
+                    NewChatTextBlock.Visibility =
+                    ModelsTextBlock.Visibility =
+                    SettingsTextBlock.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                HistoryGrid.Visibility = Visibility.Collapsed;
+                animation.Completed += (s, e) =>
+                {
+                    ModelsTextBlock.Visibility =
+                    SettingsTextBlock.Visibility = Visibility.Collapsed;
+
+                    CollapseNavBarBorder.HorizontalAlignment = HorizontalAlignment.Center;
+                    CollapseNavBarBorder.Margin = new Thickness(0, 6, 0, 6);
+                    CollapseNavBarBorder.ToolTip = "Expand";
+                };
+            }
+
+            NavBarGrid.BeginAnimation(Grid.WidthProperty, animation);
+        }
+
+        //public class GridLengthAnimation : AnimationTimeline
+        //{
+        //    public override Type TargetPropertyType => typeof(GridLength);
+
+        //    public double From { get; }
+        //    public double To { get; }
+
+        //    // Constructor to enforce setting From and To
+        //    public GridLengthAnimation(double from, double to)
+        //    {
+        //        From = from;
+        //        To = to;
+        //    }
+
+        //    public override object GetCurrentValue(object defaultOriginValue, object defaultDestinationValue, AnimationClock animationClock)
+        //    {
+        //        double progress = animationClock.CurrentProgress ?? 0.0;
+        //        double currentValue = From + (To - From) * progress;
+        //        return new GridLength(currentValue, GridUnitType.Pixel);
+        //    }
+
+        //    protected override Freezable CreateInstanceCore()
+        //    {
+        //        return new GridLengthAnimation(From, To);
+        //    }
+        //}
     }
 }
