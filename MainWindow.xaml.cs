@@ -1,4 +1,5 @@
 ﻿using Ai_Project.Content;
+using Ai_Project.Services;
 using Ai_Project.Utility;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,12 +25,15 @@ namespace Ai_Project
             public bool isActive = false;
         }
         List<NavBarControl>? NavBarControls = null;
+        private readonly OllamaService _ollamaService;
 
-        ChatPage chatPage = new ChatPage();
+        ChatPage chatPage;
         ModelsPage modelsPage = new ModelsPage();
         SettingsPage settingsPage = new SettingsPage();
-        public MainWindow()
+        public MainWindow(OllamaService ollamaService)
         {
+            this._ollamaService = ollamaService;
+            chatPage = new ChatPage(ollamaService);
             InitializeComponent();
 
             AddNavbarControls(NewChatGrid, NewChatTextBlock, chatPage);

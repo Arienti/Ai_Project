@@ -12,7 +12,7 @@ namespace Ai_Project.Repository
     public class Api
     {
 
-        public static async Task<ResponseDTO> HTTPPost(string prompt)
+        public static async Task<ResponseDTO?> HTTPPost(string prompt)
         {
             RequestDTO requestDTO = new RequestDTO
             {

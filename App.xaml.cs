@@ -1,8 +1,6 @@
 ﻿using Ai_Project.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Configuration;
-using System.Data;
 using System.Windows;
 
 namespace Ai_Project
@@ -29,6 +27,9 @@ namespace Ai_Project
 
         protected override async void OnStartup(StartupEventArgs e)
         {
+            if (AppHost == null)
+                throw new InvalidOperationException("AppHost is not initialized.");
+
             await AppHost.StartAsync();
 
             var mainWindow = AppHost.Services.GetRequiredService<MainWindow>();
@@ -39,6 +40,8 @@ namespace Ai_Project
 
         protected override async void OnExit(ExitEventArgs e)
         {
+            if (AppHost == null)
+                throw new InvalidOperationException("AppHost is not initialized.");
             await AppHost.StopAsync();
             base.OnExit(e);
         }
