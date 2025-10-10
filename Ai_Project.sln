@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ai_Project", "Ai_Project.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OllamaStartApplication", "..\OllamaStartApplication\OllamaStartApplication.csproj", "{9BFE63D9-7594-46FC-927E-A2BCE04BA579}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PromtEditorExample", "..\PromtEditorExample\PromtEditorExample.csproj", "{8459108A-6E51-4709-8251-FE8F36954748}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{9BFE63D9-7594-46FC-927E-A2BCE04BA579}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BFE63D9-7594-46FC-927E-A2BCE04BA579}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BFE63D9-7594-46FC-927E-A2BCE04BA579}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8459108A-6E51-4709-8251-FE8F36954748}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8459108A-6E51-4709-8251-FE8F36954748}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8459108A-6E51-4709-8251-FE8F36954748}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8459108A-6E51-4709-8251-FE8F36954748}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
