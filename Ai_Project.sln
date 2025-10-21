@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OllamaStartApplication", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PromtEditorExample", "..\PromtEditorExample\PromtEditorExample.csproj", "{8459108A-6E51-4709-8251-FE8F36954748}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RagWithOllamaQdrant", "..\RagWithOllamaQdrant\RagWithOllamaQdrant.csproj", "{E50CE198-7344-410D-A0B1-ED3A4CCC94E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{8459108A-6E51-4709-8251-FE8F36954748}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8459108A-6E51-4709-8251-FE8F36954748}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8459108A-6E51-4709-8251-FE8F36954748}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E50CE198-7344-410D-A0B1-ED3A4CCC94E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E50CE198-7344-410D-A0B1-ED3A4CCC94E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E50CE198-7344-410D-A0B1-ED3A4CCC94E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E50CE198-7344-410D-A0B1-ED3A4CCC94E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
