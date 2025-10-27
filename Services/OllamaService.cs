@@ -11,7 +11,7 @@ namespace Ai_Project.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _baseUrl;
-        private readonly string model = "phi:latest";
+        private readonly string model = "gemma3:4b";
 
         // Async event for streaming partial responses
         public event Func<string, Task>? OnPartialResponseReceived;
@@ -20,6 +20,7 @@ namespace Ai_Project.Services
         {
             _baseUrl = baseUrl.TrimEnd('/');
             _httpClient = new HttpClient();
+            _httpClient.Timeout = Timeout.InfiniteTimeSpan; // No timeout for long-running requests
         }
 
         // Helper to invoke all async event handlers properly
@@ -36,53 +37,92 @@ namespace Ai_Project.Services
             }
         }
 
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
         public async Task<string> GenerateResponseAsync(string prompt, CancellationToken cancellationToken = default)
         {
-            RequestDTO request = new RequestDTO
+            await _semaphore.WaitAsync(cancellationToken);
+
+            try
             {
-                model = model,
-                prompt = prompt,
-                stream = false
-            };
-            //_httpClient.Timeout = TimeSpan.FromMinutes(2);
-            var json = JsonSerializer.Serialize(request);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            using var response = await _httpClient.PostAsync($"{_baseUrl}/api/generate", content, cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            using var reader = new StreamReader(stream);
-
-            var builder = new StringBuilder();
-
-            while (!reader.EndOfStream && !cancellationToken.IsCancellationRequested)
-            {
-                var line = await reader.ReadLineAsync();
-                if (string.IsNullOrWhiteSpace(line))
-                    continue;
-
-                try
+                var request = new RequestDTO
                 {
-                    var chunk = JsonSerializer.Deserialize<OllamaChunkDTO>(line);
-                    if (chunk?.Response != null)
-                    {
-                        builder.Append(chunk.Response);
+                    model = model,
+                    prompt = prompt,
+                    max_new_tokens = 5,
+                    stream = false
+                };
 
-                        // Send letter by letter to event subscribers
-                        foreach (var ch in chunk.Response)
+                var json = JsonSerializer.Serialize(request);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                using var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/api/generate")
+                {
+                    Content = content
+                };
+
+                // Infinite timeout (wait as long as needed)
+
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+                using var response = await _httpClient.SendAsync(
+                    requestMessage,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    cts.Token
+                );
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync(cancellationToken);
+                    throw new HttpRequestException($"Status: {response.StatusCode}, Body: {error}");
+                }
+
+                using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                using var reader = new StreamReader(stream);
+
+                var builder = new StringBuilder();
+
+                while (!reader.EndOfStream && !cancellationToken.IsCancellationRequested)
+                {
+                    var line = await reader.ReadLineAsync();
+                    if (string.IsNullOrWhiteSpace(line))
+                        continue;
+
+                    // Handle “model is busy” message
+                    if (line.Contains("model is currently busy", StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new Exception("Ollama model is currently busy. Try again later.");
+                    }
+
+                    try
+                    {
+                        var chunk = JsonSerializer.Deserialize<OllamaChunkDTO>(line);
+                        if (chunk?.Response != null)
                         {
-                            await InvokePartialResponseReceivedAsync(ch.ToString());
+                            builder.Append(chunk.Response);
+
+                            // Fire partial response event if needed
+                            foreach (var ch in chunk.Response)
+                                await InvokePartialResponseReceivedAsync(ch.ToString());
                         }
                     }
+                    catch
+                    {
+                        // Ignore malformed JSON
+                    }
                 }
-                catch
-                {
-                    // You might want to log or handle errors here
-                }
-            }
 
-            return builder.ToString();
+                return builder.ToString();
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw; // Propagate user cancellation
+            }
+            finally
+            {
+                _semaphore.Release();
+                //_httpClient.Timeout = TimeSpan.FromMilliseconds(1); // Restore (optional)
+            }
         }
 
         public async Task<string> GenerateTopicAsync(string prompt, CancellationToken cancellationToken = default)

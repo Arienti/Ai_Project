@@ -11,5 +11,6 @@ namespace Ai_Project.DTO
         public string prompt { get; set; } = string.Empty;
         public string model { get; set; } = string.Empty;
         public bool stream { get; set; } = false;
+        public uint max_new_tokens { get; set; }
     }
 }

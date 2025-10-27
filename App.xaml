@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Ai_Project">
     <Application.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
         <SolidColorBrush x:Key="PrimaryBg" Color="#FF505275"/>
         <SolidColorBrush x:Key="PrimaryBgHover">#FF3b3f5c</SolidColorBrush>
 
@@ -12,5 +14,7 @@
         <SolidColorBrush x:Key="FifthBg" Color="#FF71F09A"/>
 
         <SolidColorBrush x:Key="PrimaryFg" Color="#FFe8e9fd"/>
+        <SolidColorBrush x:Key="CodeBackgroudControl" Color="#FF7679a2"/>
+        
     </Application.Resources>
 </Application>

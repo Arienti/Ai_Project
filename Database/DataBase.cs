@@ -46,6 +46,7 @@ namespace Ai_Project.Database
 
                 entity.Property(t => t.CreatedAt)
                       .HasColumnName("created_at")
+                      .IsRequired()
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasMany(t => t.Messages)
@@ -72,6 +73,7 @@ namespace Ai_Project.Database
                       .IsRequired();
 
                 entity.Property(m => m.CreatedAt)
+                       .IsRequired()
                       .HasColumnName("created_at")
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
 

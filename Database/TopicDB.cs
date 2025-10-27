@@ -61,7 +61,7 @@ namespace Ai_Project.Database
                 return ResultDTO.Fail(e.InnerException?.Message);
             }
         }
-        public async Task<ResultDTO> Delete(int id)
+        public async Task<ResultDTO> Delete(uint id)
         {
             try
             {
@@ -95,12 +95,23 @@ namespace Ai_Project.Database
                 {
                     if (db.Topics != null)
                     {
-                        var topic = await db.Topics.FindAsync(id);
+                        var topic = await db.Topics
+                            .Where(t => t.ID == id)
+                            .Include(t => t.Messages.Where(m => m.TopicId == id)) // Filtered include
+                            .FirstOrDefaultAsync();
+
                         if (topic == null)
                         {
                             return ResultDTO.Fail($"Topic with ID {id} not found.");
                         }
-                        return ResultDTO.Success(topic);
+                        var filteredTopic = new TopicDTO
+                        {
+                            CreatedAt = topic.CreatedAt,
+                            Topic = topic.Topic.Trim(),
+                            ID = topic.ID,
+                            Messages = topic.Messages
+                        };
+                        return ResultDTO.Success(filteredTopic);
                     }
                 }
                 return ResultDTO.Fail($"DataBase not connected.");
@@ -118,7 +129,7 @@ namespace Ai_Project.Database
                 {
                     if (db.Topics != null)
                     {
-                        var topics = await db.Topics.ToListAsync();
+                        var topics = await db.Topics.OrderByDescending(x => x.CreatedAt).ToListAsync();
                         return ResultDTO.Success(topics);
                     }
                 }

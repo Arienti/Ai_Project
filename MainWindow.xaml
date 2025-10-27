@@ -5,9 +5,14 @@
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Ai_Project"
+        xmlns:controls="clr-namespace:Ai_Project.Content.Controls"
+
         mc:Ignorable="d"
         Title="AI" MinHeight="480" MinWidth="850">
     <Grid x:Name="MainGrid">
+        <Grid.Background>
+            <ImageBrush ImageSource="D:\Ai_Project\Assets\chatBackGround(2).jpg" Stretch="UniformToFill"/>
+        </Grid.Background>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding ElementName=NavBarGrid, Path=ActualWidth}"/>
             <ColumnDefinition/>
@@ -121,7 +126,9 @@
                        HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14px"/>
                     <Border Grid.Row="1" Margin="5 5 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <Grid x:Name="HistoryListGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                            <StackPanel x:Name="HistoryList" HorizontalAlignment="Stretch" Orientation="Vertical" VerticalAlignment="Stretch" Background="{StaticResource PrimaryBg}">
+
+                            </StackPanel>
                         </ScrollViewer>
                     </Border>
                 </Grid>

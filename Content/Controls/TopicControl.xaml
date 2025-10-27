@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="Ai_Project.Content.Controls.TopicControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:local="clr-namespace:Ai_Project.Content.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="29" Margin="3px" Cursor="Hand">
+    <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource PrimaryBg}">
+        <Grid Height="29px" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="29px"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="TopicTextBlock"
+                       Background="{StaticResource PrimaryBg}"
+                       Text="{Binding Topic}" 
+                       MinWidth="27px"
+                       TextTrimming="CharacterEllipsis"
+                       TextWrapping="NoWrap"
+                       TextAlignment="Center"
+                       Padding="0, 7"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch" 
+                       Foreground="{StaticResource PrimaryFg}"
+                       ToolTip="{Binding Topic}"
+                       MouseEnter="TextBlock_MouseEnter"
+                       MouseLeave="TextBlock_MouseLeave"/>
+            <Border x:Name="DeleteTopicBorder" BorderThickness="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                    Background="{StaticResource PrimaryBg}" MouseEnter="TextBlock_MouseEnter" MouseLeave="TextBlock_MouseLeave">
+                
+            </Border>
+            <Icon:PackIconMaterial x:Name="DeleteTopicIcon" 
+                                   Grid.Column="1" 
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center" 
+                                   Kind="TrashCan"
+                                   Width="14px"
+                                   Height="14px"
+                                   Foreground="{StaticResource PrimaryFg}"
+                                   IsHitTestVisible="False"/>
+        </Grid>
+    </Border>
+</UserControl>
