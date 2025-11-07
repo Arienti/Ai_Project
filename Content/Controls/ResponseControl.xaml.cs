@@ -1,5 +1,4 @@
 ﻿using Ai_Project.DTO;
-using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -17,8 +16,8 @@ namespace Ai_Project.Content.Controls
     /// </summary>
     public partial class ResponseControl : UserControl
     {
-        SolidColorBrush PrimaryFg = ((SolidColorBrush)App.Current.Resources["PrimaryFg"]);
-        SolidColorBrush PrimaryBgHover = ((SolidColorBrush)App.Current.Resources["PrimaryBgHover"]);
+        SolidColorBrush ChatForeground = ((SolidColorBrush)App.Current.Resources["ChatForeground"]);
+        SolidColorBrush TextChatBGColor = ((SolidColorBrush)App.Current.Resources["TextChatBGColor"]);
         SolidColorBrush CodeBackgroudControl = ((SolidColorBrush)App.Current.Resources["CodeBackgroudControl"]);
         string entireMessage = string.Empty;
         public ResponseControl()
@@ -143,7 +142,7 @@ namespace Ai_Project.Content.Controls
                         BorderThickness = new Thickness(0),
                         Padding = new Thickness(0),
                         Background = Brushes.Transparent,
-                        Foreground = PrimaryFg,
+                        Foreground = ChatForeground,
                         FontSize = 16,
                         Margin = new Thickness(0),
                         IsReadOnly = true,
@@ -220,7 +219,7 @@ namespace Ai_Project.Content.Controls
             var txtButton = new TextBlock
             {
                 Text = "Copy",
-                Foreground = PrimaryFg,
+                Foreground = ChatForeground,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 Cursor = Cursors.Hand
@@ -233,14 +232,14 @@ namespace Ai_Project.Content.Controls
 
             copyButton.MouseLeave += (s, e) =>
             {
-                txtButton.Foreground = PrimaryFg;
+                txtButton.Foreground = ChatForeground;
             };
             copyButton.Child = txtButton;
             var codeBox = new Emoji.Wpf.RichTextBox
             {
                 Text = code,
                 FontFamily = new FontFamily("Consolas"),
-                Foreground = PrimaryFg,
+                Foreground = ChatForeground,
                 Background = Brushes.Transparent,
                 IsReadOnly = true,
                 BorderThickness = new Thickness(0),
@@ -257,7 +256,7 @@ namespace Ai_Project.Content.Controls
                 {
                     Interval = TimeSpan.FromSeconds(2),
                 };
-                
+
                 timer.Tick += (s, e) =>
                 {
                     timer.Stop();
@@ -388,7 +387,7 @@ namespace Ai_Project.Content.Controls
 
         private void CopyToClipboardIcon_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            CopyToClipboardIcon.Background = PrimaryBgHover;
+            CopyToClipboardIcon.Background = TextChatBGColor;
         }
     }
 }

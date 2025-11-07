@@ -7,7 +7,7 @@
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:local="clr-namespace:Ai_Project.Content.Controls"
              mc:Ignorable="d" 
-             MinWidth="77" MaxWidth="525" Margin="5px 0 0 0" HorizontalAlignment="Left">
+             MinWidth="77" MaxWidth="850" Margin="5px 11 0 0" HorizontalAlignment="Left">
 
     <Grid HorizontalAlignment="Left" 
           Background="Transparent">
@@ -20,12 +20,12 @@
                 HorizontalAlignment="Stretch" 
                 VerticalAlignment="Stretch" 
                 CornerRadius="14" 
-                Background="{StaticResource PrimaryBgHover}">
+                Background="{StaticResource TextChatBGColor}">
             <StackPanel x:Name="ContentPanel" Orientation="Vertical" Margin="7"/>
 
 
         </Border>
-        <Border x:Name="DateCopyGrid" Grid.Row="1" HorizontalAlignment="Stretch" Margin="2 3 77 0" CornerRadius="5" Background="{StaticResource PrimaryBg}">
+        <Border x:Name="DateCopyGrid" Grid.Row="1" HorizontalAlignment="Stretch" Margin="2 3 0 0" CornerRadius="5" Background="Transparent">
             <Grid Grid.Row="1"
               HorizontalAlignment="Stretch"
               Background="Transparent">
@@ -44,7 +44,7 @@
                        HorizontalAlignment="Left"
                        VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Foreground="{StaticResource PrimaryFg}"/>
+                       Foreground="{StaticResource ChatForeground}"/>
 
 
                 <TextBlock x:Name="QueryTextBlock"
@@ -57,7 +57,7 @@
                        HorizontalAlignment="Left"
                        VerticalAlignment="Bottom"
                        FontWeight="Bold"
-                       Foreground="{StaticResource PrimaryFg}"/>
+                       Foreground="{StaticResource ChatForeground}"/>
 
                 <Icon:PackIconMaterial x:Name="CopyToClipboardIcon" 
                                    Grid.Column="2"
@@ -67,7 +67,7 @@
                                    Cursor="Hand"
                                    Background="Transparent"
                                    Padding="2px"
-                                   Foreground="{StaticResource PrimaryFg}"
+                                   Foreground="{StaticResource ChatForeground}"
                                    Margin="10 0 3 0"
                                    HorizontalAlignment="Left"
                                    VerticalAlignment="Center"

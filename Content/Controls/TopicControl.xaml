@@ -6,40 +6,141 @@
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:local="clr-namespace:Ai_Project.Content.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="29" Margin="3px" Cursor="Hand">
-    <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource PrimaryBg}">
-        <Grid Height="29px" HorizontalAlignment="Stretch">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="29px"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock x:Name="TopicTextBlock"
-                       Background="{StaticResource PrimaryBg}"
+             d:DesignHeight="70" d:DesignWidth="325"  Margin="3px 0 0 17px" Cursor="Hand" Focusable="False" MouseEnter="UserControl_MouseEnter" MouseLeave="UserControl_MouseLeave">
+
+    <Border x:Name="border" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="6" Background="{StaticResource TopicBg}">
+        <Border.Effect>
+            <DropShadowEffect ShadowDepth="6.0" Opacity="0.5" Direction="320" BlurRadius="8" Color="Black" />
+        </Border.Effect>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="11">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="17px"/>
+                <RowDefinition Height="3px"/>
+                <RowDefinition Height="17px"/>
+                <RowDefinition Height="3px"/>
+                <RowDefinition Height="17px"/>
+                <RowDefinition Height="3px"/>
+                <RowDefinition Height="17px"/>
+            </Grid.RowDefinitions>
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="#FF666666"
+                           Text="{Binding CreatedAt, StringFormat=dd-MM-yyyy}"/>
+                <TextBlock Grid.Column="2"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="#FF666666"
+                           Text="{Binding CreatedAt, StringFormat=HH:mm:ss}"/>
+            </Grid>
+            <TextBlock Grid.Row="2"
+                       x:Name="TopicTextBlock"
                        Text="{Binding Topic}" 
-                       MinWidth="27px"
                        TextTrimming="CharacterEllipsis"
                        TextWrapping="NoWrap"
-                       TextAlignment="Center"
-                       Padding="0, 7"
                        HorizontalAlignment="Stretch"
                        VerticalAlignment="Stretch" 
-                       Foreground="{StaticResource PrimaryFg}"
-                       ToolTip="{Binding Topic}"
-                       MouseEnter="TextBlock_MouseEnter"
-                       MouseLeave="TextBlock_MouseLeave"/>
-            <Border x:Name="DeleteTopicBorder" BorderThickness="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                    Background="{StaticResource PrimaryBg}" MouseEnter="TextBlock_MouseEnter" MouseLeave="TextBlock_MouseLeave">
-                
-            </Border>
-            <Icon:PackIconMaterial x:Name="DeleteTopicIcon" 
-                                   Grid.Column="1" 
-                                   HorizontalAlignment="Center" 
-                                   VerticalAlignment="Center" 
-                                   Kind="TrashCan"
-                                   Width="14px"
-                                   Height="14px"
-                                   Foreground="{StaticResource PrimaryFg}"
-                                   IsHitTestVisible="False"/>
+                       Foreground="{StaticResource ThirdBg}"/>
+
+            <TextBlock Grid.Row="4"
+                       Text="First message of topic and let see more and more" 
+                       TextTrimming="CharacterEllipsis"
+                       TextWrapping="NoWrap"
+                       FontSize="10"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch" 
+                       Foreground="#FF666666"/>
+
+            <StackPanel Grid.Row="6" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Right">
+
+                <Border x:Name="addToFavoritesBorder" BorderThickness="0" Width="17" Height="17" Margin="0 0 11 0">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Trigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation
+                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                To="#FFFFCCCC"
+                                Duration="0:0:0.3"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.EnterActions>
+                                    <Trigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation
+                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                To="Transparent"
+                                Duration="0:0:0.3"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.ExitActions>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+
+                    <Icon:PackIconMaterial x:Name="addToFavoritesIcon"  
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center"
+                                           Kind="StarOutline"
+                                           Width="14px"
+                                           Height="14px"
+                                           Foreground="{StaticResource SecondaryBg}"
+                                           IsHitTestVisible="False"/>
+                </Border>
+
+                <Border x:Name="DeleteTopicBorder" BorderThickness="0" Width="17" Height="17">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Trigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation
+                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                To="#FFFFCCCC"
+                                Duration="0:0:0.3"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.EnterActions>
+                                    <Trigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation
+                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                To="Transparent"
+                                Duration="0:0:0.3"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.ExitActions>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+
+                    <Icon:PackIconMaterial x:Name="DeleteTopicIcon"  
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center"
+                                           Focusable="True"
+                                           Kind="TrashCan"
+                                           Width="10px"
+                                           Height="10px"
+                                           Foreground="{StaticResource SecondaryBg}"
+                                           IsHitTestVisible="False"/>
+                </Border>
+            </StackPanel> 
         </Grid>
     </Border>
 </UserControl>

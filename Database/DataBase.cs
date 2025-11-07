@@ -9,10 +9,10 @@ namespace Ai_Project.Database
         public DbSet<MessagesDTO> Messages { get; set; } = null!;
 
         // Constructor to accept options (recommended)
-        public DataBase(DbContextOptions<DataBase> options) : base(options)
-        {
-            Database.EnsureCreated();
-        }
+        //public DataBase(DbContextOptions<DataBase> options) : base(options)
+        //{
+        //   // Database.EnsureCreated();
+        //}
 
         // Optional parameterless constructor for quick usage - configure connection here
         public DataBase()
@@ -42,12 +42,18 @@ namespace Ai_Project.Database
 
                 entity.Property(t => t.Topic)
                       .HasColumnName("topic")
-                      .IsRequired();
+                      .IsRequired()
+                      .HasDefaultValue(false);
 
                 entity.Property(t => t.CreatedAt)
                       .HasColumnName("created_at")
                       .IsRequired()
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(t => t.isFavorite)
+                        .HasColumnName("is_favorite")
+                        .IsRequired()
+                        .HasDefaultValue(false);
 
                 entity.HasMany(t => t.Messages)
                       .WithOne(m => m.TopicDTO)

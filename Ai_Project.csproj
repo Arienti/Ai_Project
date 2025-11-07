@@ -13,6 +13,10 @@
     <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
     <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="6.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0-rc.1.25451.107" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0-rc.1.25451.107" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />

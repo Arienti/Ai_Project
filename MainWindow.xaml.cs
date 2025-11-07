@@ -39,14 +39,6 @@ namespace Ai_Project
 
         SettingsPage settingsPage = new SettingsPage();
 
-        private List<TopicControl> _topicControls = new List<TopicControl>();
-
-        public event Action<TopicControl>? TopicSelectedChanged;
-
-        public event Action? NewChat;
-
-        public event Action<TopicControl>? DeleteTopic;
-
         public MainWindow(OllamaService ollamaService, TopicBusiness topicBusiness)
         {
             this.topicBusiness = topicBusiness;
@@ -64,83 +56,7 @@ namespace Ai_Project
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            UpdateControls();
-        }
-
-        public async Task<TopicDTO?> OnAdd(TopicDTO topic)
-        {
-            ResultDTO result = await topicBusiness.Insert(topic);
-            if (result != null && result.IsSuccess)
-            {
-                UpdateControls();
-
-                TopicDTO? topicDTO = result.Data as TopicDTO;
-                if (topicDTO != null)
-                {
-                    TopicControl? control = _topicControls
-                        .FirstOrDefault(c => (c.DataContext as TopicDTO)?.ID == topicDTO.ID);
-                    if (control != null)
-                    setActiveControl(control);
-                }
-            }
-            return topic;
-        }
-
-        private async void UpdateControls()
-        {
-            HistoryList.Children.Clear();
-            _topicControls.Clear();
-            List<TopicDTO>? list = await topicBusiness.GetAll();
-            if (list != null)
-            {
-                foreach (var topic in list)
-                {
-                    var control = new TopicControl(topicBusiness)
-                    {
-                        DataContext = topic
-                    };
-
-                    HistoryList.Children.Add(control);
-                    control.PreviewMouseUp += HistoryBubbleControl_PreviewMouseUp;
-                    control.DeleteTopicBorder.PreviewMouseUp += (async (sender, e) =>
-                    {
-                        if (MessageBox.Show("Are you sure to delete this topic?", "AI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                        {
-                            DeleteTopic?.Invoke(control);
-                            await topicBusiness.Delete(topic.ID);
-                            UpdateControls();
-                        }
-                    });
-                    _topicControls.Add(control);
-                }
-            }
-        }
-
-        private void setActiveControl(TopicControl control)
-        {
-            foreach (var c in _topicControls)
-            {
-                if (c == control)
-                {
-                    c.SetActive();
-                }
-                else
-                {
-                    c.SetInActive();
-                }
-            }
-        }
-
-        private TopicControl? GetActiveControl()
-        {
-            foreach (TopicControl c in _topicControls)
-            {
-                if (c.Focused)
-                {
-                    return c;
-                }
-            }
-            return null;
+            //UpdateControls();
         }
 
         private void AddNavbarControls(Grid grid, TextBlock textBlock, Page? page)
@@ -215,12 +131,16 @@ namespace Ai_Project
         private void SetActiveNavBarControl(NavBarControl control)
         {
             if (NavBarControls == null || control.grid == null) return;
-
-            if (control.isActive && control.grid.Name.Equals(NewChatGrid.Name))
+            
+            if (control.grid.Equals(NewChatGrid) && control.isActive)
             {
-                NewChat?.Invoke();
-                _topicControls.ForEach(t => t.SetInActive());
+                if (control.Page as InitializablePage != null)
+                {
+                    (control.Page as InitializablePage)?.Init();
+                }
+                return;
             }
+
             if (control.isActive) return;
             foreach (var navControl in NavBarControls)
             {
@@ -231,7 +151,6 @@ namespace Ai_Project
                 navControl.Text.Foreground = isSelected ? Brushes.White : PrimaryFg;
                 navControl.Text.FontWeight = isSelected ? FontWeights.SemiBold : FontWeights.Normal;
             }
-            HistoryGrid.Visibility = control.grid.Name.Equals(NewChatGrid.Name) ? Visibility.Visible : Visibility.Collapsed;
 
             MainFrame.Content = control.Page;
 
@@ -256,14 +175,14 @@ namespace Ai_Project
                 CollapseNavBarBorder.HorizontalAlignment = HorizontalAlignment.Right;
                 CollapseNavBarBorder.Margin = new Thickness(0, 6, 4, 6);
                 CollapseNavBarBorder.ToolTip = "Collapse";
-                HistoryGrid.Visibility =
-                    NewChatTextBlock.Visibility =
-                    ModelsTextBlock.Visibility =
-                    SettingsTextBlock.Visibility = Visibility.Visible;
+                //HistoryGrid.Visibility =
+                //    NewChatTextBlock.Visibility =
+                //    ModelsTextBlock.Visibility =
+                //    SettingsTextBlock.Visibility = Visibility.Visible;
             }
             else
             {
-                HistoryGrid.Visibility = Visibility.Collapsed;
+                //HistoryGrid.Visibility = Visibility.Collapsed;
                 animation.Completed += (s, e) =>
                 {
                     ModelsTextBlock.Visibility =
@@ -276,16 +195,6 @@ namespace Ai_Project
             }
 
             NavBarGrid.BeginAnimation(Grid.WidthProperty, animation);
-        }
-
-        private async void HistoryBubbleControl_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            TopicControl? activeControl = sender as TopicControl;
-            if (activeControl == null || activeControl.Focused) return;
-            setActiveControl(activeControl);
-            await Task.Delay(50);
-
-            TopicSelectedChanged?.Invoke(activeControl);
         }
 
         //public class GridLengthAnimation : AnimationTimeline

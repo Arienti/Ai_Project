@@ -7,47 +7,59 @@ namespace Ai_Project.Content.Controls
 {
     public partial class TopicControl : UserControl
     {
-        SolidColorBrush PrimaryBgHover = ((SolidColorBrush)App.Current.Resources["PrimaryBgHover"]);
-        SolidColorBrush PrimaryBg = ((SolidColorBrush)App.Current.Resources["PrimaryBg"]);
-        SolidColorBrush PrimaryFg = ((SolidColorBrush)App.Current.Resources["PrimaryFg"]);
-
-        SolidColorBrush FourthyBg = ((SolidColorBrush)App.Current.Resources["FourthyBg"]);
+        SolidColorBrush TopicFocusBg = ((SolidColorBrush)App.Current.Resources["TopicFocusBg"]);
+        SolidColorBrush TopicHoverBg = ((SolidColorBrush)App.Current.Resources["TopicHoverBg"]);
+        SolidColorBrush TopicBg = ((SolidColorBrush)App.Current.Resources["TopicBg"]);
 
         public bool Focused = false;
 
         TopicBusiness topicBusiness;
+
+        public bool _deleteButtonIsPressed = false;
+
+        public bool _addToFavoritesButtonIsPressed = false;
+
         public TopicControl(TopicBusiness topicBusiness)
         {
             this.topicBusiness = topicBusiness;
             InitializeComponent();
         }
 
-        private void TextBlock_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        public void SetActive()
         {
+            Focused = true;
             Dispatcher.Invoke(() =>
             {
-                if (!Focused)
+                ColorAnimation colorAnimation = new ColorAnimation
                 {
-                    ColorAnimation colorAnimation = new ColorAnimation
-                    {
-                        To = PrimaryBgHover.Color, //(Color)ColorConverter.ConvertFromString("#FFFFFF"),
-                        Duration = TimeSpan.FromMilliseconds(300)
-                    };
-                    if (sender is TextBlock)
-                    {
-                        TopicTextBlock.Background = new SolidColorBrush(((SolidColorBrush)TopicTextBlock.Background).Color);
-                        TopicTextBlock.Background.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
-                    }
-                    else
-                    {
-                        DeleteTopicBorder.Background = new SolidColorBrush(((SolidColorBrush)DeleteTopicBorder.Background).Color);
-                        DeleteTopicBorder.Background.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
-                    }
-                }
+                    To = TopicFocusBg.Color,
+                    Duration = TimeSpan.FromMilliseconds(300)
+                };
+
+                border.Background = new SolidColorBrush(((SolidColorBrush)border.Background).Color);
+                border.Background.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
             });
         }
 
-        private void TextBlock_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        public void SetInActive()
+        {
+            Focused = false;
+            Dispatcher.Invoke(() =>
+            {
+                if (Focused)
+                    return;
+                ColorAnimation colorAnimation = new ColorAnimation
+                {
+                    To = TopicBg.Color,
+                    Duration = TimeSpan.FromMilliseconds(300)
+                };
+
+                border.Background = new SolidColorBrush(((SolidColorBrush)border.Background).Color);
+                border.Background.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
+            });
+        }
+
+        private void UserControl_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
@@ -55,34 +67,30 @@ namespace Ai_Project.Content.Controls
                     return;
                 ColorAnimation colorAnimation = new ColorAnimation
                 {
-                    To = PrimaryBg.Color,
+                    To = TopicHoverBg.Color,
                     Duration = TimeSpan.FromMilliseconds(300)
                 };
-                if (sender is TextBlock)
-                {
-                    TopicTextBlock.Background = new SolidColorBrush(((SolidColorBrush)TopicTextBlock.Background).Color);
-                    TopicTextBlock.Background.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
-                }
-                else
-                {
-                    DeleteTopicBorder.Background = new SolidColorBrush(((SolidColorBrush)DeleteTopicBorder.Background).Color);
-                    DeleteTopicBorder.Background.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
-                }
+
+                border.Background = new SolidColorBrush(((SolidColorBrush)border.Background).Color);
+                border.Background.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
             });
         }
 
-        public void SetActive()
+        private void UserControl_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            Focused = true;
-            TopicTextBlock.Background = PrimaryBgHover;
-            TopicTextBlock.Foreground = FourthyBg;
-        }
+            Dispatcher.Invoke(() =>
+            {
+                if (Focused)
+                    return;
+                ColorAnimation colorAnimation = new ColorAnimation
+                {
+                    To = TopicBg.Color,
+                    Duration = TimeSpan.FromMilliseconds(300)
+                };
 
-        public void SetInActive()
-        {
-            Focused = false;
-            TopicTextBlock.Background = PrimaryBg;
-            TopicTextBlock.Foreground = PrimaryFg;
+                border.Background = new SolidColorBrush(((SolidColorBrush)border.Background).Color);
+                border.Background.BeginAnimation(SolidColorBrush.ColorProperty, colorAnimation);
+            });
         }
     }
 }

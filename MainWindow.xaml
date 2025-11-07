@@ -10,9 +10,9 @@
         mc:Ignorable="d"
         Title="AI" MinHeight="480" MinWidth="850">
     <Grid x:Name="MainGrid">
-        <Grid.Background>
+        <!--<Grid.Background>
             <ImageBrush ImageSource="D:\Ai_Project\Assets\chatBackGround(2).jpg" Stretch="UniformToFill"/>
-        </Grid.Background>
+        </Grid.Background>-->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding ElementName=NavBarGrid, Path=ActualWidth}"/>
             <ColumnDefinition/>
@@ -114,7 +114,7 @@
                         </Grid>
                     </DockPanel>
                 </Border>
-                <Grid x:Name="HistoryGrid" Grid.Row="1"
+                <!--<Grid x:Name="HistoryGrid" Grid.Row="1"
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
@@ -131,7 +131,7 @@
                             </StackPanel>
                         </ScrollViewer>
                     </Border>
-                </Grid>
+                </Grid>-->
             </Grid>
         </Grid>
         <Frame x:Name="MainFrame" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" NavigationUIVisibility="Hidden"/>

@@ -49,7 +49,7 @@ namespace Ai_Project.Services
                 {
                     model = model,
                     prompt = prompt,
-                    max_new_tokens = 5,
+                    max_new_tokens = 500,
                     stream = false
                 };
 

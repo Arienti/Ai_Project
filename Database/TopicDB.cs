@@ -48,7 +48,8 @@ namespace Ai_Project.Database
                             return ResultDTO.Fail($"Topic with ID {topicDTO.ID} not found.");
                         }
                         existingTopic.Topic = topicDTO.Topic;
-                        // Update other fields as necessary
+                        existingTopic.isFavorite = topicDTO.isFavorite;
+
                         db.Topics.Update(existingTopic);
                         await db.SaveChangesAsync();
                         return ResultDTO.Success(existingTopic);
