@@ -9,6 +9,30 @@
       Title="ModelsPage">
 
     <Grid>
-        <TextBlock Text="Models Page" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBlock x:Name="ModelsCountTextblock"/>
+        <TextBlock x:Name="ModelInfoTextBlock" Grid.Row="2" Grid.Column="1"/>
+        <TextBlock x:Name="ModelInfoSizeTextBlock" Grid.Row="2" Grid.Column="1" Margin="0 25 0 0"/>
+        <Button Content="download" Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="1" Margin="0 50 0 0" Height="25" Width="125" Click="Button_Click"/>
+        <ListBox x:Name="ModelsListBox"
+                 Grid.Row="2"
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Stretch"
+                 Margin="10"
+                 DisplayMemberPath="modelId"
+                 Background="LightGray"
+                 BorderThickness="0"
+                 Foreground="Black"
+                 FontSize="16"
+                 SelectionChanged="ModelsListBox_SelectionChanged">
+        </ListBox>
     </Grid>
 </Page>
