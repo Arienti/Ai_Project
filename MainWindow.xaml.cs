@@ -4,6 +4,8 @@ using Ai_Project.Content.Controls;
 using Ai_Project.DTO;
 using Ai_Project.Services;
 using Ai_Project.Utility;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,7 +22,8 @@ namespace Ai_Project
         SolidColorBrush PrimaryBg = ((SolidColorBrush)App.Current.Resources["PrimaryBg"]);
         SolidColorBrush PrimaryBgHover = ((SolidColorBrush)App.Current.Resources["PrimaryBgHover"]);
         SolidColorBrush PrimaryFg = ((SolidColorBrush)App.Current.Resources["PrimaryFg"]);
-
+        LlamaCppService cppService = new LlamaCppService();
+        
         public class NavBarControl
         {
             public TextBlock? Text { get; set; }
@@ -54,9 +57,18 @@ namespace Ai_Project
             Loaded += MainWindow_Loaded;
         }
 
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        private  async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            //UpdateControls();
+            // Ensure the executable is downloaded
+            //  await llama.EnsureInstalledAsync();
+            //cppService.Start();
+            // Run llama.cpp with your own arguments (model, prompt, etc.)
+            string modelPath = @"D:\Ai_Project\bin\Debug\net8.0-windows\Downloads\ai21labs\AI21-Jamba-Reasoning-3B-GGUF\jamba-reasoning-3b-F16.gguf";
+            //string prompt = "i need understand what C# is";
+            string prompt = "Hello";
+            //var response = await cppService.AskAsync(prompt);
+            var response = await cppService.RunModelAsync(modelPath, prompt);
+            Debug.WriteLine(response);
         }
 
         private void AddNavbarControls(Grid grid, TextBlock textBlock, Page? page)

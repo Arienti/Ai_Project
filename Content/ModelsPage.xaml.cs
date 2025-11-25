@@ -12,11 +12,11 @@ namespace Ai_Project.Content
     /// </summary>
     public partial class ModelsPage : Page, Utility.InitializablePage
     {
-        List<ModelDTO> models;
+        List<HuggingFaceModelDTO> models;
         HuggingFaceService HuggingFaceService;
         public ModelsPage()
         {
-            models = new List<ModelDTO>();
+            models = new List<HuggingFaceModelDTO>();
             HuggingFaceService = new HuggingFaceService();
             InitializeComponent();
         }
@@ -28,7 +28,7 @@ namespace Ai_Project.Content
         {
             // Implementation for loading models goes here
             ResultDTO result = await HuggingFaceService.GetModelsAsync();
-            if (result.IsSuccess && result.Data is List<ModelDTO> fetchedModels)
+            if (result.IsSuccess && result.Data is List<HuggingFaceModelDTO> fetchedModels)
             {
                 models = fetchedModels;
                 ModelsListBox.ItemsSource = models;
@@ -42,7 +42,7 @@ namespace Ai_Project.Content
                 return;
 
             // If your items are strings (like "maya-research/maya1")
-            ModelDTO? m = ModelsListBox.SelectedItem as ModelDTO;
+            HuggingFaceModelDTO? m = ModelsListBox.SelectedItem as HuggingFaceModelDTO;
             if (m == null)
                 return;
             // OR if your items are objects:
@@ -59,7 +59,7 @@ namespace Ai_Project.Content
                         return;
 
                     ModelInfoTextBlock.Text = $"Created: {model.createdAt.ToString("G")}";
-                    ModelInfoSizeTextBlock.Text = $"Size: {model.usedStorage.ToString()}Gb";
+                    ModelInfoSizeTextBlock.Text = $"Size: {model.gguf.model_size.ToString()}Gb";
                 }
                 else
                 {
@@ -74,7 +74,7 @@ namespace Ai_Project.Content
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            ModelDTO? m = ModelsListBox.SelectedItem as ModelDTO;
+            HuggingFaceModelDTO? m = ModelsListBox.SelectedItem as HuggingFaceModelDTO;
             if (m == null)
                 return;
             ResultDTO result = await HuggingFaceService.GetModelInfo(m.modelId);

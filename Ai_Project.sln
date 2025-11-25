@@ -1,11 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22
+VisualStudioVersion = 17.14.36414.22 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ai_Project", "Ai_Project.csproj", "{EF981B58-C3D9-421D-98E7-C160FE929DC5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestModels", "..\TestModels\TestModels.csproj", "{F020B345-A751-4B95-99CC-EFD635289495}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLama_Cpp_Server", "C:\Users\Wizard\source\repos\LLama_Cpp_Server\LLama_Cpp_Server.csproj", "{53877B2E-98CC-41A5-AD47-DEEA8728A831}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Get_Pc_Info", "C:\Users\Wizard\source\repos\Get_Pc_Info\Get_Pc_Info.csproj", "{184E807D-76DA-4A67-8E67-830680889391}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHardwareInfo", "..\TestHardwareInfo\TestHardwareInfo.csproj", "{6F39AF2C-3EE8-4F04-93EF-F458173CB886}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Run_Llama_cpp", "..\Run_Llama_cpp\Run_Llama_cpp.csproj", "{76CD47E0-20CE-4CC2-8258-5620B7BF92FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLlamaCpp", "..\TestLlamaCpp\TestLlamaCpp.csproj", "{8E6CF037-9612-452E-9058-ABBD58C8BE9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +31,26 @@ Global
 		{F020B345-A751-4B95-99CC-EFD635289495}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F020B345-A751-4B95-99CC-EFD635289495}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F020B345-A751-4B95-99CC-EFD635289495}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53877B2E-98CC-41A5-AD47-DEEA8728A831}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53877B2E-98CC-41A5-AD47-DEEA8728A831}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53877B2E-98CC-41A5-AD47-DEEA8728A831}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53877B2E-98CC-41A5-AD47-DEEA8728A831}.Release|Any CPU.Build.0 = Release|Any CPU
+		{184E807D-76DA-4A67-8E67-830680889391}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{184E807D-76DA-4A67-8E67-830680889391}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{184E807D-76DA-4A67-8E67-830680889391}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{184E807D-76DA-4A67-8E67-830680889391}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F39AF2C-3EE8-4F04-93EF-F458173CB886}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F39AF2C-3EE8-4F04-93EF-F458173CB886}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F39AF2C-3EE8-4F04-93EF-F458173CB886}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F39AF2C-3EE8-4F04-93EF-F458173CB886}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76CD47E0-20CE-4CC2-8258-5620B7BF92FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76CD47E0-20CE-4CC2-8258-5620B7BF92FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76CD47E0-20CE-4CC2-8258-5620B7BF92FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76CD47E0-20CE-4CC2-8258-5620B7BF92FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E6CF037-9612-452E-9058-ABBD58C8BE9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E6CF037-9612-452E-9058-ABBD58C8BE9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E6CF037-9612-452E-9058-ABBD58C8BE9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E6CF037-9612-452E-9058-ABBD58C8BE9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,14 +3,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
-using System.Windows;
 
 namespace Ai_Project.Services
 {
     public class HuggingFaceService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl = "https://huggingface.co/api/models?search=llama&private=false";
+        private readonly string _baseUrl = "https://huggingface.co/api/models?filter=gguf&full=true";
 
         public HuggingFaceService()
         {
@@ -50,50 +49,51 @@ namespace Ai_Project.Services
 
         public async Task<ResultDTO> GetModelsAsync()
         {
-            var response = await _httpClient.GetAsync(_baseUrl);
+            HttpResponseMessage response = await _httpClient.GetAsync(_baseUrl);
             if (!response.IsSuccessStatusCode)
                 return ResultDTO.Fail($"Error fetching models: {response.ReasonPhrase}");
 
-            var content = await response.Content.ReadAsStringAsync();
-            var models = JsonSerializer.Deserialize<List<ModelDTO>>(content);
+            string content = await response.Content.ReadAsStringAsync();
+            List<HuggingFaceModelDTO>? models = JsonSerializer.Deserialize<List<HuggingFaceModelDTO>>(content);
             if (models == null)
                 return ResultDTO.Fail("Failed to deserialize model list");
-            var filterdmodels = models.Where(m => m.tags != null && m.tags
+
+            List<HuggingFaceModelDTO> filterdmodels = models.Where(m => m.tags != null && m.tags
             .Any(t => t.Equals("license:apache-2.0", StringComparison.OrdinalIgnoreCase)))
                 .OrderBy(m => m.modelId).ToList();
             // Allowed file extensions
-            string[] allowedExtensions = { ".onnx", ".tflite", ".h", ".cpp", ".pt", ".bin" };
-            // Exclude .safetensors and .gguf unless you also have the model code to load them
+            //string[] allowedExtensions = { ".gguf" };
+            //// Exclude .safetensors and .gguf unless you also have the model code to load them
 
-            // Filter models: license is apache or null
-            var filteredModels = new List<ModelDTO>();
-            foreach (var model in filterdmodels)
-            {
-                //bool licenseOk = model.license == null ||
-                //                 model.license.Equals("apache-2.0", StringComparison.OrdinalIgnoreCase);
+            //// Filter models: license is apache or null
+            //var filteredModels = new List<ModelInfoDTO>();
+            //foreach (var model in filterdmodels)
+            //{
+            //    //bool licenseOk = model.license == null ||
+            //    //                 model.license.Equals("apache-2.0", StringComparison.OrdinalIgnoreCase);
 
-                //if (!licenseOk)
-                //    continue;
+            //    //if (!licenseOk)
+            //    //    continue;
 
-                // Fetch detailed model info to check siblings
-                var detailResponse = await _httpClient.GetAsync($"https://huggingface.co/api/models/{model.modelId}");
-                if (!detailResponse.IsSuccessStatusCode)
-                    continue;
+            //    // Fetch detailed model info to check siblings
+            //    var detailResponse = await _httpClient.GetAsync($"https://huggingface.co/api/models/{model.modelId}");
+            //    if (!detailResponse.IsSuccessStatusCode)
+            //        continue;
 
-                var detailContent = await detailResponse.Content.ReadAsStringAsync();
-                var detail = JsonSerializer.Deserialize<ModelInfoDTO>(detailContent);
-                if (detail?.siblings == null || detail.siblings.Count == 0)
-                    continue;
+            //    var detailContent = await detailResponse.Content.ReadAsStringAsync();
+            //    var detail = JsonSerializer.Deserialize<ModelInfoDTO>(detailContent);
+            //    if (detail?.siblings == null || detail.siblings.Count == 0)
+            //        continue;
 
-                // Check if any sibling matches allowed extensions
-                if (detail.siblings.Any(f => allowedExtensions.Any(ext => f.rfilename.EndsWith(ext, StringComparison.OrdinalIgnoreCase))))
-                {
-                    filteredModels.Add(model);
-                }
-            }
+            //    // Check if any sibling matches allowed extensions
+            //    if (detail.siblings.Any(f => allowedExtensions.Any(ext => f.rfilename.EndsWith(ext, StringComparison.OrdinalIgnoreCase))))
+            //    {
+            //        filteredModels.Add(detail);
+            //    }
+            //}
 
-            filteredModels = filteredModels.OrderBy(m => m.modelId).ToList();
-            return ResultDTO.Success(filteredModels);
+            //filteredModels = filteredModels.OrderBy(m => m.id).ToList();
+            return ResultDTO.Success(filterdmodels);
         }
 
         public ModelInfoDTO? getModelInfo(string id)
@@ -116,19 +116,19 @@ namespace Ai_Project.Services
                     return null;
 
                 // 2. Fetch safetensors index for total_size
-                string urlSize = $"https://huggingface.co/api/resolve-cache/models/{model.id}/{model.sha}/model.safetensors.index.json";
-                var responseSize = _httpClient.GetAsync(urlSize).Result;
-                if (!responseSize.IsSuccessStatusCode)
-                    return null;
+                //string urlSize = $"https://huggingface.co/api/resolve-cache/models/{model.id}/{model.sha}/model.safetensors.index.json";
+                //var responseSize = _httpClient.GetAsync(urlSize).Result;
+                //if (!responseSize.IsSuccessStatusCode)
+                //    return null;
 
-                var contentSize = responseSize.Content.ReadAsStringAsync().Result;
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var metadata = JsonSerializer.Deserialize<MetadataDTO>(contentSize, options);
+                //var contentSize = responseSize.Content.ReadAsStringAsync().Result;
+                //var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                //var metadata = JsonSerializer.Deserialize<MetadataDTO>(contentSize, options);
 
-                if (metadata == null || metadata.metadata == null)
-                    return null;
+                //if (metadata == null || metadata.metadata == null)
+                //    return null;
 
-                model.usedStorage = metadata.metadata.total_size;
+                //model.usedStorage = metadata.metadata.total_size;
                 return model;
             }
             catch
@@ -176,19 +176,19 @@ namespace Ai_Project.Services
                 var model = JsonSerializer.Deserialize<ModelInfoDTO>(content);
 
                 // 2. Fetch the safetensors index to get total_size
-                string urlSize = $"https://huggingface.co/api/resolve-cache/models/{model.id}/{model.sha}/model.safetensors.index.json";
-                var responseSize = await _httpClient.GetAsync(urlSize);
-                if (!responseSize.IsSuccessStatusCode)
-                    return ResultDTO.Fail($"Error fetching model size. Status code: {responseSize.StatusCode}");
+                //string urlSize = $"https://huggingface.co/api/resolve-cache/models/{model.id}/{model.sha}/model.safetensors.index.json";
+                //var responseSize = await _httpClient.GetAsync(urlSize);
+                //if (!responseSize.IsSuccessStatusCode)
+                //    return ResultDTO.Fail($"Error fetching model size. Status code: {responseSize.StatusCode}");
 
-                var contentSize = await responseSize.Content.ReadAsStringAsync();
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var metadata = JsonSerializer.Deserialize<MetadataDTO>(contentSize, options);
+                //var contentSize = await responseSize.Content.ReadAsStringAsync();
+                //var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                //var metadata = JsonSerializer.Deserialize<MetadataDTO>(contentSize, options);
 
-                if (metadata == null || metadata.metadata == null)
-                    return ResultDTO.Fail("Failed to deserialize metadata");
+                //if (metadata == null || metadata.metadata == null)
+                //    return ResultDTO.Fail("Failed to deserialize metadata");
 
-                model.usedStorage = metadata.metadata.total_size;
+                //model.usedStorage = model.usedStorage;
 
                 return ResultDTO.Success(model);
             }
