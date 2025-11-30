@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Run_Llama_cpp", "..\Run_Lla
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLlamaCpp", "..\TestLlamaCpp\TestLlamaCpp.csproj", "{8E6CF037-9612-452E-9058-ABBD58C8BE9B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Get_Metadata_Info", "..\Get_Metadata_Info\Get_Metadata_Info.csproj", "{F39EA83A-062B-48CC-9A50-4AEA5333F419}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{8E6CF037-9612-452E-9058-ABBD58C8BE9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E6CF037-9612-452E-9058-ABBD58C8BE9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E6CF037-9612-452E-9058-ABBD58C8BE9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F39EA83A-062B-48CC-9A50-4AEA5333F419}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F39EA83A-062B-48CC-9A50-4AEA5333F419}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F39EA83A-062B-48CC-9A50-4AEA5333F419}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F39EA83A-062B-48CC-9A50-4AEA5333F419}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
