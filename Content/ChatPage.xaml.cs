@@ -3,12 +3,14 @@ using Ai_Project.Content.Controls;
 using Ai_Project.DTO;
 using Ai_Project.Services;
 using MahApps.Metro.IconPacks;
+using ModelsDTO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+
 
 namespace Ai_Project.Content
 {
@@ -45,13 +47,17 @@ namespace Ai_Project.Content
 
         bool _allHictory = true;
         bool _favoritesHictory = false;
-
+        RunLlamaCpp runLlamaCpp;
         public ChatPage()
         {
             topicBusiness = new TopicBusiness();
             this.ollamaService = new OllamaService();
             messagesBusiness = new MessagesBusiness();
             InitializeComponent();
+
+            string modelPath = @"D:\Ai_Project\bin\Debug\net8.0-windows\Downloads\ai21labs\AI21-Jamba-Reasoning-3B-GGUF\jamba-reasoning-3b-Q4_K_M.gguf";
+            runLlamaCpp = new RunLlamaCpp();
+            runLlamaCpp.InitializeAsync(modelPath).Wait();
         }
 
         public void Init()
@@ -110,6 +116,8 @@ namespace Ai_Project.Content
                         if (selectedTopicDTO != null && selectedTopicDTO.ID == topic.ID)
                         {
                             PromptMessagesPanel.Children.Clear();
+                            WelcomeAiBorder.Visibility = Visibility.Visible;
+                            selectedTopicDTO = null;
                         }
                         UpdateControls();
                     }
@@ -222,7 +230,7 @@ namespace Ai_Project.Content
                     }
                 }
                 WelcomeAiBorder.Visibility = Visibility.Collapsed;
-                
+
                 await Dispatcher.BeginInvoke(new Action(() =>
                 {
                     PromptMessagesScroll.UpdateLayout();
@@ -232,10 +240,30 @@ namespace Ai_Project.Content
             }
         }
 
+        private List<(string role, string message)> Prompt(MessagesDTO currentMessage, TopicDTO topic)
+        {
+            List<(string role, string content)> conversation = new();
+            if (topic == null || string.IsNullOrEmpty(currentMessage.Content))
+                return conversation;
+            foreach (var message in topic.Messages)
+            {
+                if (message.Sender == messageUser)
+                {
+                    conversation.Add(("user", message.Content));
+                }
+                else
+                    conversation.Add(("assistant", message.Content.Replace("*", "")
+                                                                  .Replace("`", "")
+                                                                  .Replace("<", "")
+                                                                  .Replace(">", "")));
+            }
+            conversation.Add(("user", currentMessage.Content));
+            return conversation;
+        }
+
         private async void SendMessage(MessagesDTO message, TypinganimationControl typinganimation)
         {
             TopicDTO topicDTO;
-
             if (selectedTopicDTO == null)
             {
                 WelcomeAiBorder.Visibility = Visibility.Collapsed;
@@ -245,20 +273,18 @@ namespace Ai_Project.Content
             {
                 topicDTO = selectedTopicDTO;
             }
-
             thinkingCts?.Cancel();
             thinkingCts = null;
 
             // Generate prompt string
-            string prompt = BuildPrompt(message, topicDTO);
-
+            //string prompt = BuildPrompt(message, topicDTO);
+            List<(string role, string message)> conversation = Prompt(message, topicDTO);
             // Generate AI response
-            string finalResponse = await ollamaService.GenerateResponseAsync(prompt);
+            //string finalResponse = await ollamaService.GenerateResponseAsync(prompt);
+            // string finalResponse = await runLlamaCpp.RunLlama(modelPath, prompt);
 
+            string finalResponse = await runLlamaCpp.GenerateResponse(conversation);
             // Stop typing animation
-            typinganimation.StopTyping();
-            PromptMessagesPanel.Children.Remove(typinganimation);
-
             MessagesDTO aiMessage = new MessagesDTO
             {
                 TopicId = 0,
@@ -266,12 +292,9 @@ namespace Ai_Project.Content
                 Sender = messageAi,
                 Content = finalResponse
             };
-
-            Dispatcher.Invoke(() =>
-            {
-                PromptMessagesPanel.Children.Add(new ResponseControl { DataContext = aiMessage });
-            });
-
+            typinganimation.StopTyping();
+            PromptMessagesPanel.Children.Remove(typinganimation);
+            PromptMessagesPanel.Children.Add(new ResponseControl { DataContext = aiMessage });
             // Insert topic if new
             if (selectedTopicDTO == null)
             {

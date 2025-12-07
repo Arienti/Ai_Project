@@ -1,5 +1,6 @@
 ﻿using Ai_Project.DTO;
 using Microsoft.EntityFrameworkCore;
+using ModelsDTO;
 
 namespace Ai_Project.Database
 {

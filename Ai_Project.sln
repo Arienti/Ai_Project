@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22 d17.14
+VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ai_Project", "Ai_Project.csproj", "{EF981B58-C3D9-421D-98E7-C160FE929DC5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestModels", "..\TestModels\TestModels.csproj", "{F020B345-A751-4B95-99CC-EFD635289495}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLama_Cpp_Server", "C:\Users\Wizard\source\repos\LLama_Cpp_Server\LLama_Cpp_Server.csproj", "{53877B2E-98CC-41A5-AD47-DEEA8728A831}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Get_Pc_Info", "C:\Users\Wizard\source\repos\Get_Pc_Info\Get_Pc_Info.csproj", "{184E807D-76DA-4A67-8E67-830680889391}"
 EndProject
@@ -18,6 +16,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLlamaCpp", "..\TestLlamaCpp\TestLlamaCpp.csproj", "{8E6CF037-9612-452E-9058-ABBD58C8BE9B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Get_Metadata_Info", "..\Get_Metadata_Info\Get_Metadata_Info.csproj", "{F39EA83A-062B-48CC-9A50-4AEA5333F419}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestBuildedLlamaCss", "..\TestBuildedLlamaCss\TestBuildedLlamaCss.csproj", "{F6F574BA-FCD0-4A0D-9464-90CF2E7D34D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Run_LlamaSharp", "..\Run_LlamaSharp\Run_LlamaSharp.csproj", "{7578603A-0069-40A3-9423-22D026B1608F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelsDTO", "..\ModelsDTO\ModelsDTO.csproj", "{6086382E-690E-49E2-A545-9DBF378BF60D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,10 +37,6 @@ Global
 		{F020B345-A751-4B95-99CC-EFD635289495}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F020B345-A751-4B95-99CC-EFD635289495}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F020B345-A751-4B95-99CC-EFD635289495}.Release|Any CPU.Build.0 = Release|Any CPU
-		{53877B2E-98CC-41A5-AD47-DEEA8728A831}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{53877B2E-98CC-41A5-AD47-DEEA8728A831}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{53877B2E-98CC-41A5-AD47-DEEA8728A831}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{53877B2E-98CC-41A5-AD47-DEEA8728A831}.Release|Any CPU.Build.0 = Release|Any CPU
 		{184E807D-76DA-4A67-8E67-830680889391}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{184E807D-76DA-4A67-8E67-830680889391}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{184E807D-76DA-4A67-8E67-830680889391}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,6 +57,18 @@ Global
 		{F39EA83A-062B-48CC-9A50-4AEA5333F419}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F39EA83A-062B-48CC-9A50-4AEA5333F419}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F39EA83A-062B-48CC-9A50-4AEA5333F419}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6F574BA-FCD0-4A0D-9464-90CF2E7D34D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6F574BA-FCD0-4A0D-9464-90CF2E7D34D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6F574BA-FCD0-4A0D-9464-90CF2E7D34D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6F574BA-FCD0-4A0D-9464-90CF2E7D34D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7578603A-0069-40A3-9423-22D026B1608F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7578603A-0069-40A3-9423-22D026B1608F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7578603A-0069-40A3-9423-22D026B1608F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7578603A-0069-40A3-9423-22D026B1608F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6086382E-690E-49E2-A545-9DBF378BF60D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6086382E-690E-49E2-A545-9DBF378BF60D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6086382E-690E-49E2-A545-9DBF378BF60D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6086382E-690E-49E2-A545-9DBF378BF60D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

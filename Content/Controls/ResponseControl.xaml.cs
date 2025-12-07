@@ -59,7 +59,7 @@ namespace Ai_Project.Content.Controls
             throw new NotImplementedException();
         }
 
-        public void SetMessageContent(string message)
+        private void SetMessageContent(string message)
         {
             ContentPanel.Children.Clear();
 
