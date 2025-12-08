@@ -10,7 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
-
+using Run_LlamaSharp;
 
 namespace Ai_Project.Content
 {
@@ -47,7 +47,7 @@ namespace Ai_Project.Content
 
         bool _allHictory = true;
         bool _favoritesHictory = false;
-        RunLlamaCpp runLlamaCpp;
+        RunLlamaSharp runLlamaCpp;
         public ChatPage()
         {
             topicBusiness = new TopicBusiness();
@@ -55,8 +55,8 @@ namespace Ai_Project.Content
             messagesBusiness = new MessagesBusiness();
             InitializeComponent();
 
-            string modelPath = @"D:\Ai_Project\bin\Debug\net8.0-windows\Downloads\ai21labs\AI21-Jamba-Reasoning-3B-GGUF\jamba-reasoning-3b-Q4_K_M.gguf";
-            runLlamaCpp = new RunLlamaCpp();
+            string modelPath = @"C:\Users\Wizard\Downloads\Qwen3-8B-Q4_K_M.gguf";
+            runLlamaCpp = new RunLlamaSharp();
             runLlamaCpp.InitializeAsync(modelPath).Wait();
         }
 

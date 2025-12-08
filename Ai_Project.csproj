@@ -13,6 +13,8 @@
     <PackageReference Include="ComputerInfo" Version="0.2.0" />
     <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
     <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
+    <PackageReference Include="LLamaSharp" Version="0.25.0" />
+    <PackageReference Include="LLamaSharp.Backend.Cuda12" Version="0.25.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="6.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
@@ -28,7 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Run_LlamaSharp\Run_LlamaSharp.csproj" />
+    <ProjectReference Include="..\ModelsDTO\ModelsDTO.csproj" />
+    <ProjectReference Include="..\RunLlamaSharp\Run_LlamaSharp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
