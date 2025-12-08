@@ -1,0 +1,169 @@
+﻿<Page x:Class="Ai_Project.Content.ModelsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+      xmlns:local="clr-namespace:Ai_Project.Content"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ModelsPage">
+    <Border Margin="8" Background="#FFF3F3F3" CornerRadius="5">
+        <Border.Effect>
+            <DropShadowEffect ShadowDepth="0.0" Opacity="1" Direction="200" BlurRadius="18" Color="Black" />
+        </Border.Effect>
+        <Grid Margin="10 16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="278"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="172"/>
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="16"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Border Background="White" Margin="0 0 27 0" CornerRadius="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="27"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Icon:PackIconMaterial Kind="Magnify" 
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center"
+                                           Foreground="#FFbab8b7"/>
+                        <TextBlock Grid.Column="1" 
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Center"
+                               Text="Search"
+                               Margin="2 0 0 0"
+                               Foreground="#FFBAB8B7"
+                               IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <!-- Show TextBlock only when the TextBox is empty -->
+                                        <DataTrigger Binding="{Binding Text.Length, ElementName=SearchTextBox}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBox x:Name="SearchTextBox"
+                             Grid.Column="1"
+                             BorderThickness="0"
+                             HorizontalAlignment="Stretch"
+                             VerticalAlignment="Center"
+                             Background="Transparent"/>
+                    </Grid>
+                </Border>
+                <TextBlock Text="Authors"
+                           Grid.Row="2"
+                           VerticalAlignment="Center"
+                           FontSize="24"
+                           Foreground="{StaticResource ChatForeground}"
+                           FontFamily="Arial"
+                           FontWeight="DemiBold"/>
+                <Border Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White" CornerRadius="8">
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0.0" Opacity="0.5" Direction="200" BlurRadius="8" Color="Black" />
+                    </Border.Effect>
+                    <ScrollViewer Style="{DynamicResource ScrollViewerStyle}" 
+                                  x:Name="AuthorsScroll"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto"
+                                  Background="Transparent">
+                        <StackPanel x:Name="AuthorsPanel" 
+                                    Orientation="Vertical" 
+                                    HorizontalAlignment="Stretch" 
+                                    VerticalAlignment="Stretch">
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+            <Grid Grid.Column="1" Margin="8 0 8 0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="16"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Models"
+                           VerticalAlignment="Center"
+                           FontSize="24"
+                           Foreground="{StaticResource ChatForeground}"
+                           FontFamily="Arial"
+                           FontWeight="DemiBold"/>
+                <Border Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White" CornerRadius="8">
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0.0" Opacity="0.5" Direction="200" BlurRadius="8" Color="Black" />
+                    </Border.Effect>
+                    <ScrollViewer Style="{DynamicResource ScrollViewerStyle}" 
+                                  x:Name="ModelsScroll"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto"
+                              Background="Transparent">
+                        <StackPanel x:Name="ModelsPanel" 
+                                    Orientation="Vertical" 
+                                    HorizontalAlignment="Stretch" 
+                                    VerticalAlignment="Stretch">
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Column="2" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="16"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Details"
+                           VerticalAlignment="Center"
+                           FontSize="24"
+                           Foreground="{StaticResource ChatForeground}"
+                           FontFamily="Arial"
+                           FontWeight="DemiBold"/>
+                <Border Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White" CornerRadius="8">
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0.0" Opacity="0.5" Direction="200" BlurRadius="8" Color="Black" />
+                    </Border.Effect>
+                    <ScrollViewer Style="{DynamicResource ScrollViewerStyle}" 
+                                  x:Name="ModelsDetailsScroll"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto"
+                                  Margin="3"
+                                  Background="Transparent">
+                        <StackPanel x:Name="ModelsDetailsPanel" 
+                                    Orientation="Vertical" 
+                                    HorizontalAlignment="Stretch" 
+                                    VerticalAlignment="Stretch">
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+            
+            <Border Grid.Row="1" Grid.ColumnSpan="3" Margin="0 5 0 0" CornerRadius="8" Background="White">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="0" Opacity="0.5" BlurRadius="8" Color="Black" />
+                </Border.Effect>
+            </Border>
+        </Grid>
+    </Border>
+</Page>
