@@ -19,6 +19,7 @@ namespace Ai_Project.Content
     /// </summary>
     public partial class ChatPage : Page, Utility.InitializablePage
     {
+        int i;
         OllamaService ollamaService;
 
         private CancellationTokenSource? thinkingCts;
