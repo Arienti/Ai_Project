@@ -10,7 +10,7 @@ class TestLlamaSharp
 
     static async Task Main()
     {
-        string modelPath = @"C:\Users\Wizard\Downloads\codellama-13b-instruct.Q2_K.gguf";
+        string modelPath = @"C:\Users\Wizard\Downloads\Ministral-3-14B-Instruct-2512-Q4_K_M.gguf";
         Console.WriteLine("Loading model...");
         runLlamaCpp = new();
         await runLlamaCpp.InitializeAsync(modelPath);

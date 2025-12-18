@@ -1,4 +1,11 @@
-﻿using System.Windows.Controls;
+﻿using Ai_Project.Content.Controls;
+using Ai_Project.DTO;
+using Ai_Project.Services;
+using Ai_Project.Tools;
+using ModelsDTO;
+using System.Globalization;
+using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace Ai_Project.Content
 {
@@ -7,30 +14,116 @@ namespace Ai_Project.Content
     /// </summary>
     public partial class ModelsPage : Page, Utility.InitializablePage
     {
-        //List<HuggingFaceModelDTO> models;
-        //HuggingFaceService HuggingFaceService;
-        //public ModelsPage()
-        //{
-        //    models = new List<HuggingFaceModelDTO>();
-        //    HuggingFaceService = new HuggingFaceService();
-        //    InitializeComponent();
-        //}
-        //public void Init()
-        //{
-        //    LoadModels().GetAwaiter();
-        //}
-        //private async Task LoadModels()
-        //{
-        //    // Implementation for loading models goes here
-        //    ResultDTO result = await HuggingFaceService.GetModelsAsync();
-        //    if (result.IsSuccess && result.Data is List<HuggingFaceModelDTO> fetchedModels)
-        //    {
-        //        models = fetchedModels;
-        //        ModelsListBox.ItemsSource = models;
-        //    }
-        //    ModelsCountTextblock.Text = $"Models {models.Count}";
-        //}
+        List<HuggingFaceModelDTO>? models;
+        HuggingFaceService HuggingFaceService;
+        public ModelsPage()
+        {
+            HuggingFaceService = new HuggingFaceService();
+            InitializeComponent();
+        }
+        public void Init()
+        {
+           // GetSize().GetAwaiter();
+            LoadModels().GetAwaiter();
+        }
 
+        private async Task GetSize()
+        {
+           // string size = await HuggingFaceService.GetFileSize();
+        }
+
+        private async Task LoadModels()
+        {
+            using (LoadAnimation loadAnimation = new LoadAnimation(LoadingProgressBar, this))
+            {
+                if (models != null && models.Count > 0) return;
+
+                models = new List<HuggingFaceModelDTO>();
+                // Implementation for loading models goes here
+                ResultDTO result = await HuggingFaceService.GetModelsAsync();
+                int authors = 0;
+                if (result.IsSuccess && result.Data is List<HuggingFaceModelDTO> fetchedModels)
+                {
+                    models = fetchedModels;
+                    // 1. Group models by author
+                    var groupedByAuthor = fetchedModels
+                                        .GroupBy(m => m._modelInfoDto!.author.Trim().ToLower())
+                                        .Select(g => new
+                                        {
+                                            Author = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(g.Key),
+                                            Models = g.ToList()
+                                        })
+                                        .ToList();
+
+                    foreach (var authorGroup in groupedByAuthor)
+                    {
+                        authors++;
+                        AuthorControl authorControl = new AuthorControl
+                        {
+                            DataContext = authorGroup.Author,
+                        };
+                        authorControl.PreviewMouseLeftButtonUp += AuthorControl_PreviewMouseLeftButtonUp;
+                        AuthorsPanel.Children.Add(authorControl);
+                    }
+                }
+                AuthorsCountTextBlock.Text = $"({authors})";
+            }
+        }
+
+        private void AuthorControl_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            int count = 0;
+            string author = (sender as AuthorControl)?.Tag as string ?? string.Empty;
+            if (string.IsNullOrEmpty(author))
+            {
+                return;
+            }
+            ModelsPanel.Children.Clear();
+            var authorModels = models?
+                               .Where(m => m._modelInfoDto != null && m._modelInfoDto.author.Trim().Equals(author.Trim(), StringComparison.OrdinalIgnoreCase))
+                               .ToList();
+            if (authorModels == null || authorModels.Count == 0) return;
+
+            foreach (var model in authorModels)
+            {
+                count++;
+                ModelControl modelControl = new ModelControl
+                {
+                    DataContext = model,
+                };
+                modelControl.PreviewMouseLeftButtonUp += ModelControl_PreviewMouseLeftButtonUp;
+                ModelsPanel.Children.Add(modelControl);
+            }
+            ModelsCountTextBlock.Text = $"({count})";
+        }
+
+        private async void ModelControl_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            ModelsDetailsPanel.Children.Clear();
+            ModelControl? modelControl = sender as ModelControl;
+            if (modelControl == null) return;
+            HuggingFaceModelDTO? model = modelControl.Tag as HuggingFaceModelDTO;
+            if (model == null || model._modelInfoDto == null || model._modelInfoDto.siblings == null)
+                return;
+            ModelsDetailsScroll.Visibility = System.Windows.Visibility.Collapsed;
+            PanelModelNameTextBlock.Text = modelControl.ModelNameTextBlock.Text;
+
+            foreach (var sibling in model._modelInfoDto.siblings)
+            {
+                sibling.size = await HuggingFaceService.GetFileSize(model._modelInfoDto.id, sibling.rfilename);
+                if (!sibling.rfilename.Contains("matrix"))
+                {
+                    FileControl fileControl = new FileControl
+                    {
+                        DataContext = sibling,
+                        Tag = model
+                    };
+
+                    ModelsDetailsPanel.Children.Add(fileControl);
+                }
+            }
+            ModelsDetailsScroll.Visibility = System.Windows.Visibility.Visible;
+        }
         //private async void ModelsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         //{
         //    if (ModelsListBox.SelectedItem == null)
@@ -91,9 +184,5 @@ namespace Ai_Project.Content
         //        MessageBox.Show($"Failed to get model info: {result.ErrorMessages}");
         //    }
         //}
-        public void Init()
-        {
-            //throw new NotImplementedException();
-        }
     }
 }

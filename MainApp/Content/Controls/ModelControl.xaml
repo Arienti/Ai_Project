@@ -1,0 +1,122 @@
+﻿<UserControl x:Class="Ai_Project.Content.Controls.ModelControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Ai_Project.Content.Controls"
+             mc:Ignorable="d" 
+             d:Height="120" d:DesignWidth="275" Margin="0 0 0 17" Cursor="Hand">
+    <Border x:Name="border" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="6"  BorderThickness="0" Background="#FFe8e9fd">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="8" ShadowDepth="0.0" Direction="320" Opacity="0.5" Color="Black"/>
+        </Border.Effect>
+        <Border.Style>
+            <Style TargetType="Border">
+                <Style.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                            To="#FFd0D2FB"
+                            Duration="0:0:0.2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                            To="#FFe8E9FD"
+                            Duration="0:0:0.2"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        <Grid Margin="17 6" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="5"/>
+                <RowDefinition/>
+                <RowDefinition Height="5"/>
+                <RowDefinition/>
+                <RowDefinition Height="5"/>
+                <RowDefinition/>
+                <RowDefinition Height="5"/>
+                <RowDefinition/>
+                <RowDefinition Height="5"/>
+                <RowDefinition/>
+                <RowDefinition Height="5"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="ModelNameTextBlock" 
+                       FontSize="16"
+                       FontWeight="Bold"
+                       Foreground="#FF5b62f1"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+
+            <TextBlock FontSize="10"
+                       Grid.Row="2"
+                       Text="{Binding _modelInfoDto._id, StringFormat='ID: {0}'}"
+                       FontWeight="DemiBold"
+                       ToolTip="{Binding _modelInfoDto._id}"
+                       Foreground="#FF696969"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+
+            <TextBlock FontSize="10"
+                       Grid.Row="4"
+                       Text="{Binding _modelInfoDto.sha, StringFormat='Sha: {0}'}"
+                       ToolTip="{Binding _modelInfoDto.sha}"
+                       FontWeight="DemiBold"
+                       TextWrapping="NoWrap"
+                       Foreground="#FF696969"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+
+            <TextBlock FontSize="10"
+                       Grid.Row="6"
+                       Text="{Binding _modelInfoDto.gguf.architecture, StringFormat='Architecture: {0}'}"
+                       FontWeight="DemiBold"
+                       TextWrapping="NoWrap"
+                       ToolTip="{Binding _modelInfoDto.sha}"
+                       Foreground="#FF696969"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+
+            <TextBlock FontSize="10"
+                       Grid.Row="8"
+                       Text="{Binding downloads, StringFormat='Downloads: {0}'}"
+                       ToolTip="{Binding downloads}"
+                       FontWeight="DemiBold"
+                       Foreground="#FF696969"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+
+            <TextBlock FontSize="10"
+                       Grid.Row="10"
+                       Text="{Binding _modelInfoDto.createdAt, StringFormat='Created: {0:dd:MM:yyyy}'}"
+                       FontWeight="DemiBold"
+                       TextWrapping="NoWrap"
+                       ToolTip="{Binding _modelInfoDto.createdAt, StringFormat='Created: {0:dd:MM:yyyy}'}"
+                       Foreground="#FF696969"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+
+            <TextBlock FontSize="10"
+                       Grid.Row="12"
+                       Text="{Binding _modelInfoDto.lastModified, StringFormat='Last modified: {0:dd:MM:yyyy}'}"
+                       FontWeight="DemiBold"
+                       TextWrapping="NoWrap"
+                       ToolTip="{Binding _modelInfoDto.sha}"
+                       Foreground="#FF696969"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+        </Grid>
+    </Border>
+</UserControl>

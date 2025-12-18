@@ -1,11 +1,11 @@
 ﻿
-using Run_LlamaSharp;
+using Run_Llama_cpp;
+using Run_Llama_cpp.Tools;
 using System.Text;
-using Run_LlamaSharp.Tools;
 // See https://aka.ms/new-console-template for more information
 
-RunLlamaSharp runLlamaCpp = new();
-string modelPath = @"D:\Ai_Project\bin\Debug\net8.0-windows\Downloads\ai21labs\AI21-Jamba-Reasoning-3B-GGUF\jamba-reasoning-3b-Q4_K_M.gguf";
+RunLlamaCpp runLlamaCpp = new();
+string modelPath = @"C:\Users\Wizard\Downloads\Ministral-3-14B-Instruct-2512-Q4_K_M.gguf";
 
 // --- Read model metadata ---
 var meta = GgufMetadata.ReadFromFile(modelPath);
@@ -51,7 +51,7 @@ while (true)
     string prompt = promptBuilder.ToString();
 
     // Run model
-    string aiResponse = await runLlamaCpp.GenerateResponse(conversation);
+    string aiResponse = await runLlamaCpp.RunLlama(modelPath, prompt);
 
     // Clean AI response
     aiResponse = aiResponse.Replace("[end of text]", "").Trim();

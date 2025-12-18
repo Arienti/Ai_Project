@@ -7,9 +7,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\RunLlamaSharp\Run_LlamaSharp.csproj" />
-    <ProjectReference Include="..\Run_Llama_cpp\Run_Llama_cpp.csproj" />
-  </ItemGroup>
-
 </Project>

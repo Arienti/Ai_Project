@@ -1,0 +1,270 @@
+﻿<UserControl x:Class="Ai_Project.Content.Controls.FileControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Ai_Project.Content.Controls"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" Margin="0 0 0 17" HorizontalAlignment="Stretch">
+    <Border x:Name="border" Height="412" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="6" Background="#FFe8e9fd">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="8" ShadowDepth="0.0" Direction="320" Opacity="0.5" Color="Black"/>
+        </Border.Effect>
+        <Grid Margin="16 14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="DescriptionTextBlock"
+                       Text="LLama-DeepSeek"
+                       FontSize="14"
+                       TextWrapping="Wrap"
+                       FontWeight="DemiBold"
+                       Foreground="#FF696969"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="37"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFF7F9FE" CornerRadius="3">
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8 6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="41"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Text="File: "
+                                   FontSize="14"
+                                   FontWeight="DemiBold"
+                                   Foreground="#FF696969"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Stretch"/>
+                        
+                        <TextBlock Grid.Column="1"
+                                   FontSize="14"
+                                   TextWrapping="Wrap"
+                                   Text="{Binding rfilename}"
+                                   FontWeight="DemiBold"
+                                   Foreground="#FF696969"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Stretch"/>
+
+                        <TextBlock Text="Type: "
+                                   Grid.Row="2"
+                                   FontSize="14"
+                                   FontWeight="DemiBold"
+                                   Foreground="#FF696969"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Stretch"/>
+
+                        <TextBlock x:Name="DataTypeTextBlock"
+                                   Grid.Row="2"
+                                   Grid.Column="1"
+                                   FontSize="14"
+                                   FontWeight="DemiBold"
+                                   Foreground="#FF696969"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Stretch"/>
+
+                        <TextBlock Text="Size: "
+                                   Grid.Row="4"
+                                   FontSize="14"
+                                   FontWeight="DemiBold"
+                                   Foreground="#FF696969"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Stretch"/>
+
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="4"
+                                   FontSize="14"
+                                   TextWrapping="Wrap"
+                                   Text="{Binding _sizeGB, StringFormat='{}{0},Gb'}"
+                                   FontWeight="DemiBold"
+                                   Foreground="#FF696969"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Stretch"/>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="37"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFF7F9FE" CornerRadius="3">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8 6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="66"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="37"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="14"/>
+                                <RowDefinition/>
+                                <RowDefinition Height="14"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Efficency: "
+                                       FontSize="14"
+                                       FontWeight="DemiBold"
+                                       Foreground="#FF696969"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Stretch"/>
+
+                            <ProgressBar x:Name="EfficiencyProgressBar" 
+                                         HorizontalAlignment="Stretch"
+                                         VerticalAlignment="Stretch"
+                                         Grid.Column="1"
+                                         Maximum="100"
+                                         BorderThickness="1"
+                                         BorderBrush="#FF2196F3"
+                                         Background="#FFF7f9Fe"
+                                         Foreground="#FF2196F3"/>
+
+                            <TextBlock x:Name="EfficencyPercentTextBlock"
+                                       Grid.Column="2"
+                                       Margin="3 0 0 0"
+                                       Text="{Binding ElementName=EfficiencyProgressBar, Path=Value, StringFormat={}{0}%}"
+                                       FontSize="14"
+                                       FontWeight="DemiBold"
+                                       Foreground="#FF696969"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Stretch"/>
+
+                            <TextBlock Text="Quality: "
+                                       Grid.Row="2"
+                                       FontSize="14"
+                                       FontWeight="DemiBold"
+                                       Foreground="#FF696969"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Stretch"/>
+
+                            <ProgressBar x:Name="QualityProgressBar"
+                                         HorizontalAlignment="Stretch"
+                                         VerticalAlignment="Stretch"
+                                         Grid.Row="2"
+                                         Grid.Column="1"
+                                         Maximum="100"
+                                         BorderThickness="1"
+                                         BorderBrush="#FFA948BA"
+                                         Background="#FFF7f9Fe"
+                                         Foreground="#FFA948BA"/>
+
+                            <TextBlock x:Name="QualityPercentTextBlock"
+                                       Grid.Row="2"
+                                       Grid.Column="2"
+                                       Margin="3 0 0 0"
+                                       Text="{Binding ElementName=QualityProgressBar, Path=Value, StringFormat={}{0}%}"
+                                       FontSize="14"
+                                       FontWeight="DemiBold"
+                                       Foreground="#FF696969"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Stretch"/>
+                            
+                            <TextBlock Text="Speed: "
+                                       Grid.Row="4"
+                                       FontSize="14"
+                                       FontWeight="DemiBold"
+                                       Foreground="#FF696969"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Stretch"/>
+
+                            <ProgressBar x:Name="SpeedProgressBar" 
+                                         HorizontalAlignment="Stretch"
+                                         VerticalAlignment="Stretch"
+                                         Grid.Row="4"
+                                         Grid.Column="1"
+                                         Maximum="100"
+                                         BorderBrush="#FFF8AA35"
+                                         Background="#FFF7f9Fe"
+                                         Foreground="#FFF8AA35"/>
+
+                            <TextBlock x:Name="SpeedPercentTextBlock"
+                                       Grid.Row="4"
+                                       Grid.Column="2"
+                                       Margin="3 0 0 0"
+                                       Text="{Binding ElementName=SpeedProgressBar, Path=Value, StringFormat={}{0}%}"
+                                       FontSize="14"
+                                       FontWeight="DemiBold"
+                                       Foreground="#FF696969"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Stretch"/>
+                        </Grid>
+                    </Border>
+                    <Border Grid.Row="2"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Background="#FF2196f3"
+                            CornerRadius="8"
+                            BorderThickness="1"
+                            BorderBrush="#0A6FC2"
+                            Cursor="Hand">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <EventTrigger RoutedEvent="MouseEnter">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#FF0a6fC2"
+                                                    Duration="0:0:0.1"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+
+                                    <EventTrigger RoutedEvent="MouseLeave">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#FF2196F3"
+                                                    Duration="0:0:0.1"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Grid HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="15"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <icon:PackIconMaterial Kind="Download"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Width="12"
+                                                   Height="12"
+                                                   Foreground="White"/>
+                            <TextBlock Text="Download"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Center"
+                                       Margin="3 0 0 3"
+                                       FontSize="16"
+                                       Foreground="White"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

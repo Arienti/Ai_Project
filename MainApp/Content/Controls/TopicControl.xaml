@@ -6,7 +6,7 @@
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:local="clr-namespace:Ai_Project.Content.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="70" d:DesignWidth="325"  Margin="3px 0 0 17px" Cursor="Hand" Focusable="False" MouseEnter="UserControl_MouseEnter" MouseLeave="UserControl_MouseLeave">
+             d:DesignHeight="70" d:DesignWidth="325"  Margin="0 0 0 17px" Cursor="Hand" Focusable="False" MouseEnter="UserControl_MouseEnter" MouseLeave="UserControl_MouseLeave">
 
     <Border x:Name="border" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="6" Background="{StaticResource TopicBg}">
         <Border.Effect>

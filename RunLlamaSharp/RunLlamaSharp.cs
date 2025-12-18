@@ -207,7 +207,7 @@ namespace Run_LlamaSharp
 
             // Detect model type by filename
             bool isBase = m.Contains("base");
-            bool isInstruct = m.Contains("instruct");
+            bool isInstruct = m.Contains("inst"); // check if is instruct model
             bool isReasoning = m.Contains("reason");
             bool isThinking = m.Contains("think");
             bool isCode = m.Contains("code");

@@ -207,6 +207,37 @@ namespace Get_Pc_Info
             }
         }
 
+        
+        public static double GetRamBandwidth()
+        {
+            try
+            {
+                var searcher = new ManagementObjectSearcher("SELECT Speed, ConfiguredClockSpeed, DataWidth FROM Win32_PhysicalMemory");
+                double totalBandwidthGBs = 0;
+                int modules = 0;
+                
+                foreach (var mo in searcher.Get())
+                {
+                    int speed = Convert.ToInt32(mo["Speed"] ?? mo["ConfiguredClockSpeed"] ?? 0); // MHz
+                    int width = Convert.ToInt32(mo["DataWidth"] ?? 64); // bits
+
+                    if (speed > 0 && width > 0)
+                    {
+                        // DDR effective: multiply by 2 (DDR), convert bits to GB/s
+                        double moduleBandwidth = speed * 2 * width / 8.0 / 1024; // MB/s
+                        totalBandwidthGBs += moduleBandwidth / 1024.0; // GB/s
+                        modules++;
+                    }
+                }
+
+                return modules > 0 ? totalBandwidthGBs : 0;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
         private static void GetOSVersion()
         {
             OSVersion = RuntimeInformation.OSDescription;
