@@ -42,5 +42,6 @@
                 return size.HasValue ? Math.Round(size.Value / 1024.0 / 1024.0 / 1024.0, 2) : 0;
             }
         }
+        //public bool _isDownloaded { get; set; } = false;
     }
 }

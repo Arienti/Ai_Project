@@ -5,7 +5,7 @@ using System.Text;
 // See https://aka.ms/new-console-template for more information
 
 RunLlamaCpp runLlamaCpp = new();
-string modelPath = @"C:\Users\Wizard\Downloads\Ministral-3-14B-Instruct-2512-Q4_K_M.gguf";
+string modelPath = @"C:\Users\Wizard\Downloads\Qwen3-8B-Q4_K_M.gguf";
 
 // --- Read model metadata ---
 var meta = GgufMetadata.ReadFromFile(modelPath);

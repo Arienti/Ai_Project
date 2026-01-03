@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="ComputerInfo" Version="0.2.0" />
+    <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
     <PackageReference Include="System.Management" Version="10.0.0" />
   </ItemGroup>
 

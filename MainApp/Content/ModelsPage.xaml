@@ -19,53 +19,113 @@
                 <ColumnDefinition Width="280"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="35"/>
-                    <RowDefinition Height="16"/>
-                    <RowDefinition Height="35"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Border Background="White" CornerRadius="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="#FFbab8b7">
-                    <Grid Margin="5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="27"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Icon:PackIconMaterial Kind="Magnify" 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border Background="White" CornerRadius="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="#FFbab8b7">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="27"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Icon:PackIconMaterial Kind="Magnify" 
                                            HorizontalAlignment="Center" 
                                            VerticalAlignment="Center"
-                                           Foreground="#FFbab8b7"/>
-                        <TextBlock Grid.Column="1" 
+                           Foreground="#FFbab8b7"/>
+                    <TextBlock Grid.Column="1" 
                                HorizontalAlignment="Stretch"
                                VerticalAlignment="Center"
                                Text="Search"
                                Margin="2 0 0 0"
                                Foreground="#FFBAB8B7"
                                IsHitTestVisible="False">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <!-- Show TextBlock only when the TextBox is empty -->
-                                        <DataTrigger Binding="{Binding Text.Length, ElementName=SearchTextBox}" Value="0">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                        <TextBox x:Name="SearchTextBox"
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <!-- Show TextBlock only when the TextBox is empty -->
+                                    <DataTrigger Binding="{Binding Text.Length, ElementName=SearchTextBox}" Value="0">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBox x:Name="SearchTextBox"
                              Grid.Column="1"
                              BorderThickness="0"
                              HorizontalAlignment="Stretch"
                              VerticalAlignment="Center"
                              Background="Transparent"/>
-                    </Grid>
-                </Border>
+                </Grid>
+            </Border>
+            <Border Grid.Column="1" Grid.ColumnSpan="2" Margin="5 0 8 0" CornerRadius="8" Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="#FFbab8b7">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="27"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Icon:PackIconMaterial Kind="DesktopClassic" 
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center"
+                                           Foreground="#FF464E6D"/>
+                    <TextBox x:Name="CpuTextBox"
+                             Grid.Column="1"
+                             Foreground="#FF464E6D"
+                             BorderBrush="#FF464E6D"
+                             BorderThickness="0 0 1 0"
+                             IsReadOnly="True"
+                             Cursor="Arrow"
+                             Padding="0 0 41 0"
+                             VerticalAlignment="Center"
+                             ToolTip="{Binding ElementName=CpuTextBox, Path=Text}"/>
+
+                    <TextBox x:Name="RamTextBox"
+                             Grid.Column="2"
+                             Foreground="#FF464E6D"
+                             BorderBrush="#FF464E6D"
+                             BorderThickness="0 0 1 0"
+                             IsReadOnly="True"
+                             Cursor="Arrow"
+                             Margin="16 0"
+                             VerticalAlignment="Center"
+                             ToolTip="{Binding ElementName=RamTextBox, Path=Text}"/>
+
+                    <TextBox x:Name="VRamTextBox"
+                             Grid.Column="3"
+                             Foreground="#FF464E6D"
+                             BorderBrush="#FF464E6D"
+                             BorderThickness="0 0 1 0"
+                             IsReadOnly="True"
+                             Cursor="Arrow"
+                             Margin="16 0"
+                             VerticalAlignment="Center"
+                             ToolTip="{Binding ElementName=VRamTextBox, Path=Text}"/>
+
+                    <TextBox x:Name="DiskSpaceTextBox"
+                             VerticalAlignment="Center"
+                             Text="C:\"
+                             Grid.Column="4"
+                             Foreground="#FF464E6D"
+                             BorderThickness="0"
+                             IsReadOnly="True"
+                             Cursor="Arrow"
+                             Margin="16 0"
+                             ToolTip="{Binding ElementName=DiskSpaceTextBox, Path=Text}"/>
+                </Grid>
+            </Border>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="56"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                
                 <TextBlock Text="Authors"
-                           Grid.Row="2"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"
                            FontSize="24"
@@ -73,7 +133,6 @@
                            FontFamily="Arial"
                            FontWeight="DemiBold"/>
                 <TextBlock x:Name="AuthorsCountTextBlock" Text="(0)"
-                           Grid.Row="2"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
                            FontSize="14"
@@ -82,17 +141,17 @@
                            FontWeight="DemiBold"
                            Margin="0 0 3 0"/>
 
-                <TextBlock Grid.Row="3"
+                <TextBlock Grid.Row="1"
                            Text="Each author may offer multiple models with different weights or configurations, affecting performance, speed, and response quality."
                            TextWrapping="Wrap"
-                           VerticalAlignment="Center"
+                           VerticalAlignment="Top"
                            FontSize="12"
                            Foreground="#FF696969"
                            FontFamily="Arial"
                            FontWeight="DemiBold"
                            Margin="0 0 0 3"/>
 
-                <Border Grid.Row="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFf7f9fe" CornerRadius="8" BorderThickness="10" BorderBrush="#FF5d6b99">
+                <Border Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFf7f9fe" CornerRadius="8" BorderThickness="3" BorderBrush="#FF5d6b99">
                     <!--<Border.Effect>
                         <DropShadowEffect ShadowDepth="0.0" Opacity="0.5" Direction="200" BlurRadius="8" Color="Black" />
                     </Border.Effect>-->
@@ -115,10 +174,10 @@
                     </Border>
                 </Border>
             </Grid>
-            <Grid Grid.Column="1" Margin="8 0 8 0">
+            <Grid Grid.Column="1" Grid.Row="1" Margin="8 0 8 0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="35"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="56"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <TextBlock Text="Models"
@@ -140,14 +199,14 @@
                 <TextBlock Grid.Row="1"
                            Text="Each model may have multiple files with different precisions or configurations, each affecting performance, speed, and response quality."
                            TextWrapping="Wrap"
-                           VerticalAlignment="Center"
+                           VerticalAlignment="Top"
                            FontSize="12"
                            Foreground="#FF696969"
                            FontFamily="Arial"
                            FontWeight="DemiBold"
                            Margin="0 0 0 3"/>
 
-                <Border Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFf7f9fe" CornerRadius="8" BorderThickness="5" BorderBrush="#FF5d6b99">
+                <Border Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFf7f9fe" CornerRadius="8" BorderThickness="3" BorderBrush="#FF5d6b99">
                     <Border.Effect>
                         <DropShadowEffect ShadowDepth="0.0" Opacity="0.5" Direction="200" BlurRadius="8" Color="Black" />
                     </Border.Effect>
@@ -169,10 +228,10 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Column="2" >
+            <Grid Grid.Column="2" Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="35"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="56"/>
                     <RowDefinition/>
                     <RowDefinition Height="8"/>
                     <RowDefinition Height="172"/>
@@ -187,7 +246,7 @@
                 <TextBlock Grid.Row="1"
                            Text="Select an AI model to download and use for conversations. Larger models may provide better answers but require more system resources."
                            TextWrapping="Wrap"
-                           VerticalAlignment="Center"
+                           VerticalAlignment="Top"
                            FontSize="12"
                            Foreground="#FF696969"
                            FontFamily="Arial"

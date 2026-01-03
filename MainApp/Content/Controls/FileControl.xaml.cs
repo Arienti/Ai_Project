@@ -1,8 +1,12 @@
-﻿using Ai_Project.DTO;
+﻿using Ai_Project.Content.Controls.Demo;
+using Ai_Project.DTO;
+using Ai_Project.Model_Manager;
 using Get_Pc_Info;
+using ModelsDTO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Ai_Project.Content.Controls
 {
@@ -11,11 +15,17 @@ namespace Ai_Project.Content.Controls
     /// </summary>
     public partial class FileControl : UserControl
     {
-        public FileControl()
+        HuggingFaceModelDTO model;
+        ModelManager modelManager;
+        
+        public FileControl(HuggingFaceModelDTO model, ModelManager modelManager)
         {
-            InitializeComponent();
-            DataContextChanged += FileControl_DataContextChanged;
+            this.model = model;
+            this.modelManager = modelManager;
 
+            InitializeComponent();
+
+            DataContextChanged += FileControl_DataContextChanged;
         }
 
         private void FileControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -25,6 +35,21 @@ namespace Ai_Project.Content.Controls
             SiblingDTO? sibling = this.DataContext as SiblingDTO;
             if (sibling != null)
             {
+                HuggingFaceModelDTO? modelDTO = modelManager.AvailableModels.FirstOrDefault(m => m.id == model.id);
+                if (modelManager.CheckFileExists(model, sibling.rfilename))
+                {
+                    if (modelDTO != null)
+                    {
+                        DownloadBorder.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    DownloadBorder.Visibility = Visibility.Visible;
+                    LoadModelBorder.Visibility = Visibility.Collapsed;
+                    DeleteModelBorder.Visibility = Visibility.Collapsed;
+                }
+
                 Match match = regex.Match(sibling.rfilename);
                 if (match.Success)
                 {
@@ -70,8 +95,7 @@ namespace Ai_Project.Content.Controls
             else
                 precision = "optimized precision";
 
-            string text = $"This model file uses {precision} and is designed to provide a balanced combination of performance, processing speed, and response quality. " +
-              "It contributes to the overall behavior of the model, ensuring efficient inference while maintaining accurate and detailed outputs.";
+            string text = $"This model uses {precision} to balance performance, speed, and response quality, ensuring efficient inference and accurate outputs.";
 
             DescriptionTextBlock.Text = text;
         }
@@ -162,22 +186,26 @@ namespace Ai_Project.Content.Controls
 
         private int CalculateSpeed(string Dtype)
         {
-            if (string.IsNullOrEmpty(Dtype)) return 50;
+            if (string.IsNullOrEmpty(Dtype))
+                return 50;
 
-            // 1. Map dtype to numeric value
-            int dtypeValue = Dtype.Contains("matrix") ? 0 :
-                             Dtype.Contains("1") ? 1 :
-                             Dtype.Contains("2") ? 2 :
-                             Dtype.Contains("3") ? 3 :
-                             Dtype.Contains("4") ? 4 :
-                             Dtype.Contains("5") ? 5 :
-                             Dtype.Contains("6") ? 6 :
-                             Dtype.Contains("7") ? 7 :
-                             Dtype.Contains("8") ? 8 :
-                             Dtype.Contains("16") || Dtype.Contains("f16") ? 16 :
-                             Dtype.Contains("32") || Dtype.Contains("f32") ? 32 : 4;
+            // 1. Normalize dtype string
+            string dt = Dtype.ToLowerInvariant();
 
-            // 2. Base speed per dtype (lower = faster)
+            // 2. Map dtype to numeric value
+            int dtypeValue = dt.Contains("matrix") ? 0 :
+                             dt.Contains("1") && !dt.Contains("16") ? 1 :
+                             dt.Contains("2") ? 2 :
+                             dt.Contains("3") ? 3 :
+                             dt.Contains("4") && !dt.Contains("16") ? 4 :
+                             dt.Contains("5") ? 5 :
+                             dt.Contains("6") && !dt.Contains("16") ? 6 :
+                             dt.Contains("7") ? 7 :
+                             dt.Contains("8") ? 8 :
+                             dt.Contains("16") || dt.Contains("f16") ? 16 :
+                             dt.Contains("32") || dt.Contains("f32") ? 32 : 4;
+
+            // 3. Base speed per dtype (lower = faster)
             double baseSpeed = dtypeValue switch
             {
                 0 => 65,   // matrix
@@ -194,19 +222,43 @@ namespace Ai_Project.Content.Controls
                 _ => 70
             };
 
-            // 3. Scale by CPU cores
-            int cores = GetPcInfo.CpuList.Sum(c => c.LogicalCores);
-            double speed = baseSpeed * cores / 8.0; // 8-core baseline
+            // 4. CPU scaling
+            int totalLogical = GetPcInfo.CpuList.Sum(c => c.LogicalCores);
+            int maxLogical = GetPcInfo.CpuList.Max(c => c.LogicalCores);
+            maxLogical = Math.Max(1, maxLogical); // avoid divide by zero
+            double cpuFactor = (double)totalLogical / maxLogical;
+            cpuFactor = Math.Max(0.5, Math.Min(2.0, cpuFactor));
+            double speed = baseSpeed * cpuFactor;
 
-            // 4. Scale by RAM bandwidth
+            // 5. RAM scaling
             double ramBandwidth = GetPcInfo.GetRamBandwidth(); // GB/s
-            speed *= Math.Min(1.0, ramBandwidth / 25.0); // 25 GB/s baseline
+            double baselineRam = ramBandwidth > 0 ? ramBandwidth : 1; // treat own system as 100%
+            double ramFactor = ramBandwidth > 0 ? ramBandwidth / ramBandwidth : 1.0; // relative to itself
+            speed *= ramFactor;
 
-            // 5. Clamp to 100%
+            // 6. GPU scaling (dynamic, no hardcode)
+            ulong totalVRAM = 0;
+            ulong maxVRAM = 0;
+            foreach (var gpu in GetPcInfo.Gpus)
+            {
+                totalVRAM += gpu.VRAM;
+                if (gpu.VRAM > maxVRAM)
+                    maxVRAM = gpu.VRAM;
+            }
+
+            double gpuFactor = maxVRAM > 0
+                ? Math.Min(1.0, (double)totalVRAM / maxVRAM)
+                : 1.0;
+
+            speed *= gpuFactor;
+
+            // 7. Clamp final speed
             speed = Math.Min(100, speed);
+            speed = Math.Max(10, speed);
 
             return (int)Math.Round(speed);
         }
+
 
         private void FillProgressBar(string dtype)
         {
@@ -221,31 +273,36 @@ namespace Ai_Project.Content.Controls
             foreach (var cpu in GetPcInfo.CpuList)
                 totalCores += cpu.LogicalCores;
 
-            int bits = CalculateSpeed(dtype);
-            // Base speed depending on bits (user-friendly estimate)
-            double baseSpeed = bits switch
-            {
-                1 => 100,
-                2 => 95,  // Q2 fastest
-                3 => 90,
-                4 => 85,
-                5 => 80,
-                6 => 75,
-                8 => 70,
-                16 => 35,  // FP16
-                32 => 30,  // F32
-                0 => 65,   // matrix/imatrix
-                _ => 50
-            };
-
-            // Scale by logical cores relative to 8-core baseline
-            double speedValue = baseSpeed * totalCores / 8.0;
-
-            // Clamp to 100%
-            speedValue = Math.Min(100, speedValue);
+            int speedValue = CalculateSpeed(dtype);
 
             SpeedProgressBar.Value = speedValue;
 
+        }
+
+        private async void DownloadBorder_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is not SiblingDTO sibling)
+                return;
+
+            // Use the DownloadProgressBar inside a using block so it gets disposed of when done.
+            using (var download = new DownloadModel(ProgressGrid, DownloadProgressBar, DownloadBorder, StopBorder, modelManager))
+            {
+                download.sibling = sibling;
+                download.model = model;
+                download.DownloadingProgressTextBlock = DownloadingProgressTextBlock;
+                ResultDTO result = await download.DownloadModelAsync();
+
+                if (result.IsSuccess)
+                {
+                    LoadModelBorder.Visibility = Visibility.Visible;
+                    DeleteModelBorder.Visibility = Visibility.Visible;
+                }
+            }
+        }
+
+        private void StopBorder_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            modelManager.DownloadCancelled?.Invoke(true);
         }
     }
 }

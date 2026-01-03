@@ -10,7 +10,7 @@ class TestLlamaSharp
 
     static async Task Main()
     {
-        string modelPath = @"C:\Users\Wizard\Downloads\Ministral-3-14B-Instruct-2512-Q4_K_M.gguf";
+        string modelPath = @"D:\Ai_Project\MainApp\bin\Debug\net8.0-windows\Models\LiquidAI\LiquidAI\LFM2-2.6B-GGUF\LFM2-2.6B-F16.gguf";
         Console.WriteLine("Loading model...");
         runLlamaCpp = new();
         await runLlamaCpp.InitializeAsync(modelPath);

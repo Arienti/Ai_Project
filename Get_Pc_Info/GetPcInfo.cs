@@ -1,7 +1,9 @@
 ﻿using NickStrupat;
-using System.IO;
+using SharpDX;
+using SharpDX.DXGI;
 using System.Management;
 using System.Runtime.InteropServices;
+
 
 namespace Get_Pc_Info
 {
@@ -105,6 +107,7 @@ namespace Get_Pc_Info
             }
         }
 
+
         private static void LoadGpuInfo()
         {
             Gpus.Clear();
@@ -112,9 +115,13 @@ namespace Get_Pc_Info
             try
             {
                 var searcher = new ManagementObjectSearcher(
-                    "SELECT Name, AdapterRAM, PNPDeviceID FROM Win32_VideoController");
+                    "SELECT Name, PNPDeviceID FROM Win32_VideoController");
 
                 var list = new List<(string Name, ulong DedicatedVRAM, string Id)>();
+
+                // Get DXGI adapters info
+                using var factory = new Factory1();
+                var dxgiAdapters = factory.Adapters1;
 
                 foreach (ManagementObject mo in searcher.Get())
                 {
@@ -122,34 +129,23 @@ namespace Get_Pc_Info
                         continue;
 
                     string name = "Unknown GPU";
-                    ulong vram = 0;
                     string id = Guid.NewGuid().ToString(); // fallback unique ID
+                    ulong dedicatedVRAM = 0;
 
-                    // Get GPU name
                     try { name = mo["Name"]?.ToString() ?? "Unknown GPU"; } catch { }
-
-                    // Get GPU VRAM safely
-                    try
-                    {
-                        var ramObj = mo["AdapterRAM"];
-                        if (ramObj != null)
-                        {
-                            vram = Convert.ToUInt64(ramObj);
-
-                            // Sanity check: ignore unrealistic values (>128GB)
-                            if (vram > 128UL * 1024 * 1024 * 1024)
-                                vram = 0;
-                        }
-                    }
-                    catch
-                    {
-                        vram = 0;
-                    }
-
-                    // Get unique ID for duplicate removal
                     try { id = mo["PNPDeviceID"]?.ToString() ?? id; } catch { }
 
-                    list.Add((name, vram, id));
+                    // Try to match WMI GPU with DXGI adapter by name
+                    var dxgiAdapter = dxgiAdapters.FirstOrDefault(a => a.Description.Description.Contains(name));
+                    if (dxgiAdapter != null)
+                    {
+                        PointerSize vramPointer = dxgiAdapter.Description.DedicatedVideoMemory;
+                        string s = vramPointer.ToString();
+                        if (ulong.TryParse(s, out ulong vram))
+                            dedicatedVRAM = vram;
+                    }
+
+                    list.Add((name, dedicatedVRAM, id));
                 }
 
                 // Remove duplicates by PNPDeviceID
@@ -163,13 +159,15 @@ namespace Get_Pc_Info
             }
             catch
             {
-                // WMI disabled or other error
+                // WMI/DXGI error fallback
             }
 
             // Ensure at least one placeholder GPU exists
             if (Gpus.Count == 0)
                 Gpus.Add(("Unknown GPU", 0));
         }
+
+
 
 
         private static void LoadDiskInfo()
@@ -207,7 +205,7 @@ namespace Get_Pc_Info
             }
         }
 
-        
+
         public static double GetRamBandwidth()
         {
             try
@@ -215,7 +213,7 @@ namespace Get_Pc_Info
                 var searcher = new ManagementObjectSearcher("SELECT Speed, ConfiguredClockSpeed, DataWidth FROM Win32_PhysicalMemory");
                 double totalBandwidthGBs = 0;
                 int modules = 0;
-                
+
                 foreach (var mo in searcher.Get())
                 {
                     int speed = Convert.ToInt32(mo["Speed"] ?? mo["ConfiguredClockSpeed"] ?? 0); // MHz
@@ -223,9 +221,10 @@ namespace Get_Pc_Info
 
                     if (speed > 0 && width > 0)
                     {
-                        // DDR effective: multiply by 2 (DDR), convert bits to GB/s
-                        double moduleBandwidth = speed * 2 * width / 8.0 / 1024; // MB/s
-                        totalBandwidthGBs += moduleBandwidth / 1024.0; // GB/s
+                        // DDR effective: multiply by 2 (DDR), convert bits to bytes
+                        double moduleBandwidthMBs = speed * 2 * width / 8.0; // MB/s
+                        double moduleBandwidthGBs = moduleBandwidthMBs / 1024.0; // GB/s
+                        totalBandwidthGBs += moduleBandwidthGBs;
                         modules++;
                     }
                 }
@@ -237,6 +236,7 @@ namespace Get_Pc_Info
                 return 0;
             }
         }
+
 
         private static void GetOSVersion()
         {

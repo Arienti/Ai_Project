@@ -1,10 +1,11 @@
 ﻿using Ai_Project.Content.Controls;
 using Ai_Project.DTO;
+using Ai_Project.Model_Manager;
 using Ai_Project.Services;
 using Ai_Project.Tools;
+using Get_Pc_Info;
 using ModelsDTO;
 using System.Globalization;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace Ai_Project.Content
@@ -15,21 +16,43 @@ namespace Ai_Project.Content
     public partial class ModelsPage : Page, Utility.InitializablePage
     {
         List<HuggingFaceModelDTO>? models;
-        HuggingFaceService HuggingFaceService;
+        ModelManager modelManager;
         public ModelsPage()
         {
-            HuggingFaceService = new HuggingFaceService();
+            modelManager = new ModelManager();
             InitializeComponent();
         }
         public void Init()
         {
-           // GetSize().GetAwaiter();
+            // GetSize().GetAwaiter();
+            GetPacInfo();
             LoadModels().GetAwaiter();
+        }
+
+        private void GetPacInfo()
+        {
+            // RAM
+            RamTextBox.Text = $"Available ram: {GetPcInfo.AvailableRam / 1024 / 1024 / 1024} GB";
+
+            // Disk
+            DiskSpaceTextBox.Text = $"Disk available: {GetPcInfo.DiskFree / 1024 / 1024 / 1024} GB";
+
+            // GPUs
+            var gpu = GetPcInfo.Gpus.FirstOrDefault();
+            if (gpu.Name != null)
+            {
+                VRamTextBox.Text = $"VRAM: {gpu.VRAM / 1024 / 1024} MB";
+            }
+
+            // All CPUs (multi CPU systems)
+            var cpu = GetPcInfo.CpuList.FirstOrDefault();
+
+            CpuTextBox.Text = $"CPU: {cpu.Name}  Threads: {cpu.PhysicalCores}";
         }
 
         private async Task GetSize()
         {
-           // string size = await HuggingFaceService.GetFileSize();
+            // string size = await HuggingFaceService.GetFileSize();
         }
 
         private async Task LoadModels()
@@ -40,7 +63,7 @@ namespace Ai_Project.Content
 
                 models = new List<HuggingFaceModelDTO>();
                 // Implementation for loading models goes here
-                ResultDTO result = await HuggingFaceService.GetModelsAsync();
+                ResultDTO result = await modelManager.GetModelsAsync();
                 int authors = 0;
                 if (result.IsSuccess && result.Data is List<HuggingFaceModelDTO> fetchedModels)
                 {
@@ -110,10 +133,10 @@ namespace Ai_Project.Content
 
             foreach (var sibling in model._modelInfoDto.siblings)
             {
-                sibling.size = await HuggingFaceService.GetFileSize(model._modelInfoDto.id, sibling.rfilename);
+                sibling.size = await modelManager.GetFileSize(model._modelInfoDto.id, sibling.rfilename);
                 if (!sibling.rfilename.Contains("matrix"))
                 {
-                    FileControl fileControl = new FileControl
+                    FileControl fileControl = new FileControl(model, modelManager)
                     {
                         DataContext = sibling,
                         Tag = model

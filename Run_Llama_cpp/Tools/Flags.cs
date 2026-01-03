@@ -25,7 +25,7 @@ namespace Run_Llama_cpp.Tools
                 { LlamaFlags.Temp,        v => $"--temp {v.Temp}" },
                 { LlamaFlags.Top_P,       v => $"--top-p {v.Top_p}" },
                 { LlamaFlags.Ngl,         v => $"--n-gpu-layers {v.Ngl}" },
-                { LlamaFlags.SingleTurn,  v => $"--single-turn" },
+         //       { LlamaFlags.SingleTurn,  v => $"--single-turn" },
                 { LlamaFlags.NoPrompt,    v => $"--no-display-prompt" }
             };
 

@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:Ai_Project.Content.Controls"
              xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Margin="0 0 0 17" HorizontalAlignment="Stretch">
-    <Border x:Name="border" Height="412" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="6" Background="#FFe8e9fd">
+             Height="Auto" d:DesignWidth="800" Margin="0 0 0 17" HorizontalAlignment="Stretch">
+    <Border x:Name="border" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="6" Background="#FFe8e9fd">
         <Border.Effect>
             <DropShadowEffect BlurRadius="8" ShadowDepth="0.0" Direction="320" Opacity="0.5" Color="Black"/>
         </Border.Effect>
@@ -28,7 +28,7 @@
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="37"/>
+                    <RowDefinition Height="14"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFF7F9FE" CornerRadius="3">
@@ -101,22 +101,24 @@
                 <Grid Grid.Row="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="37"/>
+                        <RowDefinition Height="14"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
 
                     <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFF7F9FE" CornerRadius="3">
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8 6">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="66"/>
+                                <ColumnDefinition Width="81"/>
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="37"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
-                                <RowDefinition Height="14"/>
+                                <RowDefinition Height="8"/>
                                 <RowDefinition/>
-                                <RowDefinition Height="14"/>
+                                <RowDefinition Height="8"/>
+                                <RowDefinition/>
+                                <RowDefinition Height="23"/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <TextBlock Text="Efficency: "
@@ -204,65 +206,308 @@
                                        Foreground="#FF696969"
                                        HorizontalAlignment="Left"
                                        VerticalAlignment="Stretch"/>
+
+                            <TextBlock Text="Compatible: "
+                                       Grid.Row="6"
+                                       FontSize="14"
+                                       FontWeight="DemiBold"
+                                       Foreground="#FF696969"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Stretch"/>
+
+                            <TextBlock x:Name="CompatibleTextBlock"
+                                       Text="Compatible: "
+                                       Grid.Row="6"
+                                       Grid.Column="1"
+                                       FontSize="14"
+                                       FontWeight="DemiBold"
+                                       Foreground="#FF696969"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Stretch"/>
                         </Grid>
                     </Border>
-                    <Border Grid.Row="2"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Background="#FF2196f3"
-                            CornerRadius="8"
-                            BorderThickness="1"
-                            BorderBrush="#0A6FC2"
-                            Cursor="Hand">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Style.Triggers>
-                                    <EventTrigger RoutedEvent="MouseEnter">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <ColorAnimation
-                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                    To="#FF0a6fC2"
-                                                    Duration="0:0:0.1"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-
-                                    <EventTrigger RoutedEvent="MouseLeave">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <ColorAnimation
-                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                    To="#FF2196F3"
-                                                    Duration="0:0:0.1"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                        <Grid HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Margin="5">
+                    <Grid Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid x:Name="ProgressGrid" Height="0" Visibility="Collapsed" VerticalAlignment="Top">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="14"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="DownloadingProgressTextBlock" Text="Downloading . . ."
+                                       HorizontalAlignment="Left"
+                                       Foreground="Black"/>
+                            <Border Grid.Row="1" BorderThickness="2" BorderBrush="#FF2B884A" CornerRadius="8">
+                                <ProgressBar Style="{StaticResource ProgressBarStyle1}" 
+                                             x:Name="DownloadProgressBar"
+                                             HorizontalAlignment="Stretch"
+                                             BorderThickness="0"
+                                             VerticalAlignment="Stretch"
+                                             Maximum="100"
+                                             Value="0"
+                                             Background="Transparent"
+                                             Foreground="#FF50C878"/>
+                            </Border>
+                        </Grid>
+                        <Grid Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="15"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <icon:PackIconMaterial Kind="Download"
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"
-                                                   Width="12"
-                                                   Height="12"
-                                                   Foreground="White"/>
-                            <TextBlock Text="Download"
-                                       Grid.Column="1"
-                                       HorizontalAlignment="Stretch"
-                                       VerticalAlignment="Center"
-                                       Margin="3 0 0 3"
-                                       FontSize="16"
-                                       Foreground="White"/>
+                            <Border x:Name="DownloadBorder"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Visibility="Visible"
+                                    Background="#FF2196f3"
+                                    CornerRadius="8"
+                                    BorderThickness="1"
+                                    BorderBrush="#0A6FC2"
+                                    Cursor="Hand"
+                                    Margin="0 0 8 0"
+                                    PreviewMouseLeftButtonUp="DownloadBorder_PreviewMouseLeftButtonUp">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <EventTrigger RoutedEvent="MouseEnter">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <ColorAnimation
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#FF0a6fC2"
+                                                    Duration="0:0:0.02"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+
+                                            <EventTrigger RoutedEvent="MouseLeave">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <ColorAnimation
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#FF2196F3"
+                                                    Duration="0:0:0.02"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="15"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <icon:PackIconMaterial x:Name="DownloadIcon"
+                                                       Kind="Download"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Width="12"
+                                                       Height="12"
+                                                       Foreground="White"/>
+                                    <TextBlock x:Name="DownloadTextBlock"
+                                           Text="Download"
+                                           Grid.Column="1"
+                                           HorizontalAlignment="Stretch"
+                                           VerticalAlignment="Center"
+                                           Margin="3 0 0 3"
+                                           FontSize="16"
+                                           Foreground="White"/>
+                                </Grid>
+                            </Border>
+
+                            <Border x:Name="LoadModelBorder"
+                                    Grid.Column="1"
+                                    Visibility="Visible"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Background="#FF4caf50"
+                                    CornerRadius="8"
+                                    BorderThickness="1"
+                                    BorderBrush="#FF00b300"
+                                    Margin="0 0 8 0"
+                                    Cursor="Hand"
+                                    PreviewMouseLeftButtonUp="StopBorder_PreviewMouseLeftButtonUp">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <EventTrigger RoutedEvent="MouseEnter">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <ColorAnimation
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                            To="#FF3E8e41"
+                                                            Duration="0:0:0.02"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+
+                                            <EventTrigger RoutedEvent="MouseLeave">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <ColorAnimation
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                            To="#FF4CAf50"
+                                                            Duration="0:0:0.02"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="15"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <icon:PackIconMaterial Kind="UploadCircle"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           Width="12"
+                                                           Height="12"
+                                                           Foreground="White"/>
+                                    <TextBlock Text="Load Model"
+                                               Grid.Column="1"
+                                               HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Center"
+                                               Margin="3 0 0 3"
+                                               FontSize="16"
+                                               Foreground="White"/>
+                                </Grid>
+                            </Border>
+
+                            <Border x:Name="DeleteModelBorder" 
+                                    Grid.Column="2"
+                                    Visibility="Visible"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    CornerRadius="8"
+                                    BorderThickness="1"
+                                    Cursor="Hand"
+                                    PreviewMouseLeftButtonUp="StopBorder_PreviewMouseLeftButtonUp">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="{StaticResource SecondaryHoverBg}"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Trigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <ColorAnimation
+                                                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                                To="{StaticResource SecondaryColorBg}"
+                                                                Duration="0:0:0.3"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </Trigger.EnterActions>
+                                                <Trigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <ColorAnimation
+                                                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                                To="{StaticResource SecondaryHoverColorBg}"
+                                                                Duration="0:0:0.3"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </Trigger.ExitActions>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="15"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <icon:PackIconMaterial Kind="TrashCan"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           Width="12"
+                                                           Height="12"
+                                                           Foreground="White"/>
+                                    <TextBlock Text="Delete"
+                                               Grid.Column="1"
+                                               HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Center"
+                                               Margin="3 0 0 3"
+                                               FontSize="16"
+                                               Foreground="White"/>
+                                </Grid>
+                            </Border>
+
+                            <Border x:Name="StopBorder"
+                                    Grid.Column="3"
+                                    Visibility="Collapsed"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Background="#FFff4d4d"
+                                    CornerRadius="8"
+                                    BorderThickness="1"
+                                    BorderBrush="#FFb30000"
+                                    Cursor="Hand"
+                                    PreviewMouseLeftButtonUp="StopBorder_PreviewMouseLeftButtonUp">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <EventTrigger RoutedEvent="MouseEnter">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <ColorAnimation
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                            To="#FFFF0000"
+                                                            Duration="0:0:0.02"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+
+                                            <EventTrigger RoutedEvent="MouseLeave">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <ColorAnimation
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                            To="#FFff4d4d"
+                                                            Duration="0:0:0.02"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="15"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <icon:PackIconMaterial Kind="Stop"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           Width="12"
+                                                           Height="12"
+                                                           Foreground="White"/>
+                                    <TextBlock Text="Stop"
+                                               Grid.Column="1"
+                                               HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Center"
+                                               Margin="3 0 0 3"
+                                               FontSize="16"
+                                               Foreground="White"/>
+                                </Grid>
+                            </Border>
+
                         </Grid>
-                    </Border>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>
