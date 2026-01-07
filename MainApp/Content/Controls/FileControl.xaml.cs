@@ -1,8 +1,10 @@
 ﻿using Ai_Project.Content.Controls.Demo;
 using Ai_Project.DTO;
 using Ai_Project.Model_Manager;
+using Ai_Project.Model_Manager.Helper;
 using Get_Pc_Info;
 using ModelsDTO;
+using Run_LlamaSharp.DTOs;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,9 +19,10 @@ namespace Ai_Project.Content.Controls
     {
         HuggingFaceModelDTO model;
         ModelManager modelManager;
-        
-        public FileControl(HuggingFaceModelDTO model, ModelManager modelManager)
+        TextBox textBox;
+        public FileControl(HuggingFaceModelDTO model, ModelManager modelManager, TextBox textBox)
         {
+            this.textBox = textBox;
             this.model = model;
             this.modelManager = modelManager;
 
@@ -284,7 +287,12 @@ namespace Ai_Project.Content.Controls
             if (DataContext is not SiblingDTO sibling)
                 return;
 
-            // Use the DownloadProgressBar inside a using block so it gets disposed of when done.
+            if (DownloadModel.IsDownloading)
+            {
+                MessageBox.Show("Another download is already in progress. Please wait for it to finish before starting a new download.", "Download in Progress", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             using (var download = new DownloadModel(ProgressGrid, DownloadProgressBar, DownloadBorder, StopBorder, modelManager))
             {
                 download.sibling = sibling;
@@ -292,7 +300,7 @@ namespace Ai_Project.Content.Controls
                 download.DownloadingProgressTextBlock = DownloadingProgressTextBlock;
                 ResultDTO result = await download.DownloadModelAsync();
 
-                if (result.IsSuccess)
+                if (result.IsSuccess && !result.Data!.ToString()!.Equals("Download canceled by user"))
                 {
                     LoadModelBorder.Visibility = Visibility.Visible;
                     DeleteModelBorder.Visibility = Visibility.Visible;
@@ -303,6 +311,45 @@ namespace Ai_Project.Content.Controls
         private void StopBorder_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             modelManager.DownloadCancelled?.Invoke(true);
+        }
+
+        private async void LoadBorder_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            SiblingDTO? sibling = this.DataContext as SiblingDTO;
+            if (sibling != null)
+            {
+                if (modelManager.CheckFileExists(model, sibling.rfilename))
+                {
+                    ModelDTO runModel = new ModelDTO
+                    {
+                        id = model.id,
+                        _id = model._modelInfoDto!._id,
+                        path = modelManager.GetModelPath(model, sibling.rfilename)!,
+                    };
+                    await modelManager.RunModel(runModel);
+                    Console.SetError(new TextBoxWriter(textBox));
+                    Console.SetOut(new TextBoxWriter(textBox));
+                }
+            }
+        }
+
+        private void DeleteBorder_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            SiblingDTO? sibling = this.DataContext as SiblingDTO;
+            if (sibling != null)
+            {
+                if (MessageBox.Show("Are you sure to delete this model?", "Delete model", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    if (modelManager.CheckFileExists(model, sibling.rfilename))
+                    {
+                        modelManager.DeleteModel(model, sibling.rfilename);
+
+                        DeleteModelBorder.Visibility =
+                            LoadModelBorder.Visibility = Visibility.Collapsed;
+                        DownloadBorder.Visibility = Visibility.Visible;
+                    }
+                }
+            }
         }
     }
 }

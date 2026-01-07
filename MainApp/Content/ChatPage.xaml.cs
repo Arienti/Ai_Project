@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Run_LlamaSharp;
+using Run_LlamaSharp.DTOs;
 
 namespace Ai_Project.Content
 {
@@ -19,9 +20,6 @@ namespace Ai_Project.Content
     /// </summary>
     public partial class ChatPage : Page, Utility.InitializablePage
     {
-        int i;
-        OllamaService ollamaService;
-
         private CancellationTokenSource? thinkingCts;
 
         private TopicDTO? selectedTopicDTO;
@@ -48,17 +46,23 @@ namespace Ai_Project.Content
 
         bool _allHictory = true;
         bool _favoritesHictory = false;
-        RunLlamaSharp runLlamaCpp;
+        RunLlamaSharp? runLlamaCpp;
         public ChatPage()
         {
             topicBusiness = new TopicBusiness();
-            this.ollamaService = new OllamaService();
+            //this.ollamaService = new OllamaService();
             messagesBusiness = new MessagesBusiness();
             InitializeComponent();
 
+            ModelDTO model = new ModelDTO
+            {
+                _id = "qwen-3-8b-q4_k_m",
+                id = "Qwen/Qwen-3-8B-Q4_K_M",
+                path = @"D:\Ai_Project\MainApp\bin\Debug\net8.0-windows\Models\bartowski\cognitivecomputations_Dolphin-Mistral-24B-Venice-Edition-GGUF\cognitivecomputations_Dolphin-Mistral-24B-Venice-Edition-IQ2_M.gguf"
+            };
             string modelPath = @"C:\Users\Wizard\Downloads\Qwen3-8B-Q4_K_M.gguf";
             runLlamaCpp = new RunLlamaSharp();
-            runLlamaCpp.InitializeAsync(modelPath).Wait();
+            runLlamaCpp.InitializeAsync(model).Wait();
         }
 
         public void Init()

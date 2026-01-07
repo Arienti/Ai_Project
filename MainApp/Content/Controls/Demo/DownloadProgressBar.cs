@@ -17,9 +17,11 @@ namespace Ai_Project.Content.Controls.Demo
         public SiblingDTO? sibling;
         public TextBlock? DownloadingProgressTextBlock;
         public HuggingFaceModelDTO? model;
+        public static bool IsDownloading = false;
 
         public DownloadModel(Grid grid, ProgressBar progressBar, Border _downloadBorder, Border Stopborder, ModelManager modelManager)
         {
+            IsDownloading = true;
             this.modelManager = modelManager;
             this.grid = grid;
             this.progressBar = progressBar;
@@ -80,7 +82,11 @@ namespace Ai_Project.Content.Controls.Demo
             try
             {
                 ResultDTO result = await modelManager.DownloadModelAsync(model, sibling.rfilename, (long)sibling.size);
-
+                if (result.IsSuccess && result.Data.ToString().Equals("Download canceled by user"))
+                {
+                    _downloadBorder.Dispatcher.Invoke(() => _downloadBorder.Visibility = Visibility.Visible);
+                }
+                else
                 if (!result.IsSuccess)
                 {
                     if (MessageBox.Show("An error occurred during downloading.", "Error",
@@ -143,7 +149,7 @@ namespace Ai_Project.Content.Controls.Demo
         public void Dispose()
         {
             HideGrid();
-
+            IsDownloading = false;
             modelManager.OnDownloadProgress -= DownloadProgressChanged;
 
             if (DownloadingProgressTextBlock != null) DownloadingProgressTextBlock.Text = "Downloading";

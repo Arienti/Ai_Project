@@ -2,6 +2,8 @@
 using LLama;
 using LLama.Common;
 using LLama.Sampling;
+using Microsoft.Extensions.Logging;
+using Run_LlamaSharp.DTOs;
 using Run_LlamaSharp.Tools;
 using System;
 using System.Collections.Generic;
@@ -16,21 +18,32 @@ namespace Run_LlamaSharp
 {
     public class RunLlamaSharp
     {
-        protected LLamaWeights? model;
+        protected LLamaWeights? modelWeights;
         protected LLamaContext? context;
         protected StatelessExecutor? executor;
         protected InferenceParams? inferenceParams;
-        //private readonly object _inferLock = new object();
-        private protected string SelectedModelPath { get; set; } = string.Empty;
-        // Child can override this method
-        public virtual string GetModelPath()
+
+        private protected ModelDTO? SelectedModel { get; set; } = null;
+
+        public Action<string, string>? OnLog;
+
+        public virtual ModelDTO GetModelSelected()
         {
-            return SelectedModelPath;
+            return SelectedModel!;
         }
 
-        public virtual async Task InitializeAsync(string modelPath)
+        public void UnloadModel()
         {
-            SelectedModelPath = modelPath;
+            SelectedModel = null;
+            modelWeights = null;
+            context = null;
+            executor = null;
+            inferenceParams = null;
+        }
+
+        public virtual async Task InitializeAsync(ModelDTO model)
+        {
+            SelectedModel = model;
             await LoadModelAsync();
         }
 
@@ -77,21 +90,20 @@ namespace Run_LlamaSharp
             return (int)Math.Min(maxContext, meta.NCtx);
         }
 
-
         private async Task LoadModelAsync()
         {
-            string modelPath = GetModelPath();
+            ModelDTO model = GetModelSelected();
 
-            if (string.IsNullOrEmpty(modelPath))
+            if (model == null)
                 throw new InvalidOperationException("No model selected.");
 
-            var ggufMetadata = GgufMetadata.ReadFromFile(modelPath);
+            var ggufMetadata = GgufMetadata.ReadFromFile(model.path);
 
             int threads = GetPcInfo.CpuList.Sum(t => t.PhysicalCores);
             int gpuCount = GetPcInfo.Gpus.Count;
 
 
-            var modelParams = new ModelParams(modelPath)
+            var modelParams = new ModelParams(model.path)
             {
                 Threads = threads > 4 ? threads - 2 : threads,
                 ContextSize = (uint)CalculateMaxContext(ggufMetadata),
@@ -100,10 +112,10 @@ namespace Run_LlamaSharp
                 MainGpu = gpuCount > 0 ? 0 : -1,
 
             };
+            modelWeights = LLamaWeights.LoadFromFile(modelParams);
+            context = modelWeights.CreateContext(modelParams);
 
-            model = LLamaWeights.LoadFromFile(modelParams);
-            context = model.CreateContext(modelParams);
-            executor = new StatelessExecutor(model, modelParams);
+            executor = new StatelessExecutor(modelWeights, modelParams);
 
             inferenceParams = new InferenceParams
             {
@@ -117,10 +129,23 @@ namespace Run_LlamaSharp
                 DecodeSpecialTokens = true,
                 AntiPrompts = new List<string> { "[END_OF_RESPONSE]" }
             };
-            Debug.WriteLine("context Size: ", model.ContextSize.ToString());
-            Debug.WriteLine("Size in  bytes: ", model.SizeInBytes.ToString());
-            Debug.WriteLine("Embeding Size: ", model.EmbeddingSize.ToString());
-            Debug.WriteLine("Vocab: ", model.Vocab.ToString());
+
+            var contextFields = context.GetType().GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            foreach (var f in contextFields)
+            {
+                OnLog?.Invoke($"{f.Name} =", $"{f.GetValue(context)}");
+            }
+
+            // Optional: If you want state info
+            var stateProperty = context.GetType().GetProperty("State", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            var state = stateProperty?.GetValue(context);
+            if (state != null)
+            {
+                var stateFields = state.GetType().GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                foreach (var f in stateFields)
+                    OnLog?.Invoke($"{f.Name} =", $"{f.GetValue(state)}");
+            }
+
             await Task.CompletedTask;
         }
 
@@ -167,7 +192,7 @@ namespace Run_LlamaSharp
 
             if (context == null)
                 throw new InvalidOperationException("context is null.");
-            if (model == null)
+            if (modelWeights == null)
                 throw new InvalidOperationException("model is not loaded");
             // Reserve tokens for generation
             int modelGeneration = context.ContextSize <= 2048 ? 1200 : 1000;
@@ -180,7 +205,7 @@ namespace Run_LlamaSharp
             for (int i = 0; i < conversation.Count; i++)
             {
                 var msg = conversation[i];
-                var tokens = model.Tokenize(msg.content, false, false, Encoding.UTF8);
+                var tokens = modelWeights.Tokenize(msg.content, false, false, Encoding.UTF8);
 
                 if (totalTokens + tokens.Length > tokenLimit)
                     continue; // skip older messages if over limit
@@ -203,7 +228,7 @@ namespace Run_LlamaSharp
 
         private string GenerateTemplate(List<(string role, string content)> conversation)
         {
-            string m = SelectedModelPath.ToLower();
+            string m = SelectedModel!.path.ToLower();
 
             // Detect model type by filename
             bool isBase = m.Contains("base");

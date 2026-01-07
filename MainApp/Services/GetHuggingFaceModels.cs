@@ -1,7 +1,6 @@
 ﻿using Ai_Project.DTO;
 using Ai_Project.Model_Manager;
 using ModelsDTO;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
@@ -144,15 +143,13 @@ namespace Ai_Project.Services
             }
         }
 
-        public async Task<ResultDTO> DownloadModel(HuggingFaceModelDTO model, string rfilename, long size, Action<long, long, double> OnDownloadProgress, CancellationToken cancellationToken = default)
+        public async Task<ResultDTO> DownloadModel(HuggingFaceModelDTO model, string rfilename, long size, CancellationToken cancellationToken = default)
         {
             if (model == null)
                 return ResultDTO.Fail("Model is null");
 
             if (modelManager.CheckFileExists(model, rfilename))
-            {
-                return ResultDTO.Success($"File {rfilename} already exists and is up-to-date.");
-            }
+                return ResultDTO.Success($"File {rfilename} already exists.");
 
             string? path = modelManager.CreateModelPath(model, rfilename);
             if (path == null)
@@ -162,41 +159,45 @@ namespace Ai_Project.Services
 
             try
             {
-                using var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                using var response = await _httpClient.GetAsync(
+                    url,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    cancellationToken);
+
                 response.EnsureSuccessStatusCode();
 
                 using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-                byte[] buffer = new byte[81920];
-                long fileDownloaded = 0;
-                int read;
                 using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None, 81920, useAsync: true);
+                modelManager._fileStream = fs;
 
-                DateTime startTime = DateTime.Now;
+                modelManager.StartDownloading(size);
 
-                while ((read = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
+                var progressTask = modelManager.InitializeDownloadInfo(cancellationToken);
+
+                byte[] buffer = new byte[81920];
+                int read;
+                try
                 {
-                    if (cancellationToken.IsCancellationRequested)
+                    while ((read = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
                     {
-                        return ResultDTO.Fail("Download cancelled by user");
+                        await modelManager.SaveModelFileAsync(buffer, read, cancellationToken);
                     }
-                    await modelManager.SaveModelFileAsync(model, rfilename, fs, buffer, read, size, startTime, cancellationToken, OnDownloadProgress);
+                }
+                finally
+                {
+                    modelManager.StopDownloading();
+                    await progressTask;
                 }
 
-                Debug.WriteLine($"Completed {rfilename} ({fileDownloaded / 1024.0 / 1024.0:F2} MB)");
-
-                return ResultDTO.Success($"{rfilename}");
+                return ResultDTO.Success($"{rfilename} downloaded");
             }
             catch (OperationCanceledException)
             {
-                Debug.WriteLine($"Download canceled for {rfilename}");
-                return ResultDTO.Fail("Download canceled");
+                return ResultDTO.Success("Download canceled by user");
             }
             catch (Exception ex)
             {
-                modelManager.DeleteModel(model, rfilename);
-
-                Debug.WriteLine($"Error downloading {rfilename}: {ex.Message}");
-                return ResultDTO.Fail($"Error downloading {rfilename}: {ex.Message}");
+                return ResultDTO.Fail(ex.Message);
             }
         }
     }

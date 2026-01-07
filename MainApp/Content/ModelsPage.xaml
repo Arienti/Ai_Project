@@ -297,6 +297,15 @@
                     <Border.Effect>
                         <DropShadowEffect ShadowDepth="0" Opacity="0.5" BlurRadius="8" Color="Black" />
                     </Border.Effect>
+                    <TextBox x:Name="LogsTextBox"
+                             Foreground="#FF464E6D"
+                             BorderBrush="#FF464E6D"
+                             BorderThickness="0"
+                             IsReadOnly="True"
+                             Cursor="Arrow"
+                             Padding="8 0"
+                             VerticalAlignment="Center"
+                             ToolTip="{Binding ElementName=ModelsDownloadPathTextBox, Path=Text}"/>
                 </Border>
             </Grid>
             

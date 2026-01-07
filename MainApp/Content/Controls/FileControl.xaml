@@ -333,7 +333,7 @@
                                     BorderBrush="#FF00b300"
                                     Margin="0 0 8 0"
                                     Cursor="Hand"
-                                    PreviewMouseLeftButtonUp="StopBorder_PreviewMouseLeftButtonUp">
+                                    PreviewMouseLeftButtonUp="LoadBorder_PreviewMouseLeftButtonUp">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Style.Triggers>
@@ -374,7 +374,7 @@
                                                            Width="12"
                                                            Height="12"
                                                            Foreground="White"/>
-                                    <TextBlock Text="Load Model"
+                                    <TextBlock Text="Run"
                                                Grid.Column="1"
                                                HorizontalAlignment="Stretch"
                                                VerticalAlignment="Center"
@@ -392,7 +392,7 @@
                                     CornerRadius="8"
                                     BorderThickness="1"
                                     Cursor="Hand"
-                                    PreviewMouseLeftButtonUp="StopBorder_PreviewMouseLeftButtonUp">
+                                    PreviewMouseLeftButtonUp="DeleteBorder_PreviewMouseLeftButtonUp">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="Background" Value="{StaticResource SecondaryHoverBg}"/>

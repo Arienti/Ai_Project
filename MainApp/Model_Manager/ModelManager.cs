@@ -1,6 +1,8 @@
 ﻿using Ai_Project.DTO;
 using Ai_Project.Services;
 using ModelsDTO;
+using Run_LlamaSharp;
+using Run_LlamaSharp.DTOs;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -13,19 +15,31 @@ namespace Ai_Project.Model_Manager
         protected string? AssemblyPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private const string ModelsFolder = "Models";
 
-        private long fileDownloaded = 0;
-        private DateTime? lastUpdateTime;
-        private long totalDownloadedBytes = 0;
+        long totalSize = 0;
+        long fileDownloaded = 0;
+        DateTime startTime;
+        DateTime lastUpdateTime;
+        DateTime lastDataReceived;
+        private bool isDownloading = false;
 
         private HuggingFaceService huggingfaceService;
 
         public Action<long, long, double>? OnDownloadProgress;
         public Action<bool>? DownloadCancelled;
 
+        public FileStream _fileStream { get; set; }
+
         public ModelManager()
         {
             AvailableModels = new List<HuggingFaceModelDTO>();
             huggingfaceService = new HuggingFaceService(this);
+        }
+
+        public async Task RunModel(ModelDTO model)
+        {
+            SelectLlama selectLlama = new SelectLlama();
+            selectLlama.UnLoadModel();
+            await selectLlama.InitializeAsync(model);
         }
 
         public List<HuggingFaceModelDTO>? GetModels()
@@ -59,11 +73,14 @@ namespace Ai_Project.Model_Manager
             return await huggingfaceService.GetFileSize(id, rFilename);
         }
 
-        private void ResetdownloadInfo()
+        public void StartDownloading(long size)
         {
+            totalSize = size;
             fileDownloaded = 0;
-            totalDownloadedBytes = 0;
-            lastUpdateTime = DateTime.Now;
+            startTime = DateTime.UtcNow;
+            lastUpdateTime = startTime;
+            lastDataReceived = startTime;
+            isDownloading = true;
         }
 
         public bool CheckFileExists(HuggingFaceModelDTO model, string rfilename)
@@ -115,6 +132,15 @@ namespace Ai_Project.Model_Manager
             }
         }
 
+        public string? GetModelPath(HuggingFaceModelDTO model, string rfilename)
+        {
+            if (AssemblyPath == null || model == null)
+                return null;
+            string path = Path.Combine(AssemblyPath, ModelsFolder, model.id, rfilename);
+            path = path.Replace("/", "\\");
+            return path;
+        }
+
         private void EnsureDirectoryExists(string path)
         {
             if (!Directory.Exists(path))
@@ -127,6 +153,11 @@ namespace Ai_Project.Model_Manager
         {
             try
             {
+                if (_fileStream != null)
+                {
+                    _fileStream.Dispose();
+                }
+
                 string modelPath = Path.Combine(AssemblyPath!, ModelsFolder, model.id, rfilename);
 
                 if (File.Exists(modelPath))
@@ -157,7 +188,8 @@ namespace Ai_Project.Model_Manager
 
         public async Task<ResultDTO> DownloadModelAsync(HuggingFaceModelDTO model, string rfilename, long size, CancellationToken cancellationToken = default)
         {
-            ResetdownloadInfo();
+            StartDownloading(size);
+
             var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
             DownloadCancelled += (isCancelled) =>
@@ -171,13 +203,23 @@ namespace Ai_Project.Model_Manager
 
             try
             {
-                return await huggingfaceService.DownloadModel(model, rfilename, size, OnDownloadProgress!, cancellationTokenSource.Token);
+                ResultDTO result = await huggingfaceService.DownloadModel(model, rfilename, size, cancellationTokenSource.Token);
+                string data = string.Empty;
+
+                if (result.Data != null)
+                {
+                    data = result.Data.ToString() ?? string.Empty;
+
+                    bool isDownloadFailed = !result.IsSuccess ||
+                            data.Equals("Download canceled by user");
+                    if (isDownloadFailed)
+                    {
+                        DeleteModel(model, rfilename);
+                    }
+                }
+                return result;
             }
-            catch (OperationCanceledException)
-            {
-                Debug.WriteLine($"Download of {rfilename} was canceled.");
-                return ResultDTO.Fail("Download canceled.");
-            }
+
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error downloading {rfilename}: {ex.Message}");
@@ -186,55 +228,51 @@ namespace Ai_Project.Model_Manager
         }
 
 
-        public async Task SaveModelFileAsync(HuggingFaceModelDTO modelDTO, string rfilename, FileStream fs, byte[] buffer, int read, long size, DateTime startDateTime, CancellationToken cancellationToken, Action<long, long, double>? OnDownloadProgress)
+        public async Task SaveModelFileAsync(byte[] buffer, int read, CancellationToken cancellationToken)
         {
-            try
+            await _fileStream.WriteAsync(buffer, 0, read, cancellationToken);
+
+            Interlocked.Add(ref fileDownloaded, read);
+            lastDataReceived = DateTime.UtcNow;
+        }
+
+        public void StopDownloading()
+        {
+            isDownloading = false;
+        }
+
+        public async Task InitializeDownloadInfo(CancellationToken cancellationToken)
+        {
+            while (isDownloading && !cancellationToken.IsCancellationRequested)
             {
-                //if (isCancelled)
-                //{
-                //    await fs.DisposeAsync();  // Make sure it's fully closed
-                //    DeleteModel(modelDTO, rfilename);
-                //    cancellationToken.ThrowIfCancellationRequested();
-                //    return;
-                //}
-
-                await fs.WriteAsync(buffer, 0, read, cancellationToken);
-
-                InitializeDownloadInfo(OnDownloadProgress, read, size, startDateTime);
-
-            }
-            catch (Exception ex)
-            {
-                // Handle file writing error
-                Debug.Write($"Error saving file {rfilename}: {ex.Message}");
+                UpdateProgress();
+                await Task.Delay(1000, cancellationToken);
             }
         }
 
-        private void InitializeDownloadInfo(Action<long, long, double>? OnDownloadProgress, int read, long size, DateTime startTime)
+        private void UpdateProgress()
         {
-            // Increment the number of bytes downloaded
-            fileDownloaded += read;
-            totalDownloadedBytes += read;
+            var now = DateTime.UtcNow;
 
-            // Calculate elapsed time since start
-            TimeSpan elapsedTime = DateTime.Now - startTime;
-            double elapsedSeconds = elapsedTime.TotalSeconds;
+            if ((now - lastUpdateTime).TotalSeconds < 1)
+                return;
 
-            // Calculate download speed (bytes per second)
-            long downloadSpeed = (long)Math.Round(fileDownloaded / elapsedSeconds, 2);
+            long downloaded = Interlocked.Read(ref fileDownloaded);
+            double elapsedSeconds = (now - startTime).TotalSeconds;
 
-            // If at least 1 second has passed since the last update
-            if ((DateTime.Now - lastUpdateTime)?.TotalSeconds >= 1)
-            {
-                // Estimate the remaining time
-                double estimatedTimeRemaining = (size - fileDownloaded) / downloadSpeed;
+            if (elapsedSeconds <= 0)
+                return;
 
-                // Invoke progress update callback if provided
-                OnDownloadProgress?.Invoke(totalDownloadedBytes, downloadSpeed, estimatedTimeRemaining);
+            double speed = downloaded / elapsedSeconds;
+            double remaining =
+                speed > 0 ? (totalSize - downloaded) / speed : double.PositiveInfinity;
 
-                // Update lastUpdateTime
-                lastUpdateTime = DateTime.Now;
-            }
+            OnDownloadProgress?.Invoke(
+                downloaded,
+                (long)speed,
+                remaining);
+
+            lastUpdateTime = now;
         }
     }
 }

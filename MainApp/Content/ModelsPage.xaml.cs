@@ -136,7 +136,7 @@ namespace Ai_Project.Content
                 sibling.size = await modelManager.GetFileSize(model._modelInfoDto.id, sibling.rfilename);
                 if (!sibling.rfilename.Contains("matrix"))
                 {
-                    FileControl fileControl = new FileControl(model, modelManager)
+                    FileControl fileControl = new FileControl(model, modelManager, LogsTextBox)
                     {
                         DataContext = sibling,
                         Tag = model
@@ -147,6 +147,7 @@ namespace Ai_Project.Content
             }
             ModelsDetailsScroll.Visibility = System.Windows.Visibility.Visible;
         }
+
         //private async void ModelsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         //{
         //    if (ModelsListBox.SelectedItem == null)
