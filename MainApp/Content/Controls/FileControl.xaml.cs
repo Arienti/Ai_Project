@@ -1,14 +1,16 @@
 ﻿using Ai_Project.Content.Controls.Demo;
 using Ai_Project.DTO;
 using Ai_Project.Model_Manager;
-using Ai_Project.Model_Manager.Helper;
 using Get_Pc_Info;
 using ModelsDTO;
 using Run_LlamaSharp.DTOs;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
+using static LLama.Common.ChatHistory;
 
 namespace Ai_Project.Content.Controls
 {
@@ -19,9 +21,11 @@ namespace Ai_Project.Content.Controls
     {
         HuggingFaceModelDTO model;
         ModelManager modelManager;
-        TextBox textBox;
-        public FileControl(HuggingFaceModelDTO model, ModelManager modelManager, TextBox textBox)
+        RichTextBox textBox;
+        ScrollViewer logScrollViewer;
+        public FileControl(HuggingFaceModelDTO model, ModelManager modelManager, RichTextBox textBox, ScrollViewer logScrollViewer)
         {
+            this.logScrollViewer = logScrollViewer;
             this.textBox = textBox;
             this.model = model;
             this.modelManager = modelManager;
@@ -326,9 +330,54 @@ namespace Ai_Project.Content.Controls
                         _id = model._modelInfoDto!._id,
                         path = modelManager.GetModelPath(model, sibling.rfilename)!,
                     };
-                    await modelManager.RunModel(runModel);
-                    Console.SetError(new TextBoxWriter(textBox));
-                    Console.SetOut(new TextBoxWriter(textBox));
+                    textBox.Document.Blocks.Clear();
+                    if (textBox.Document.Blocks.FirstBlock == null)
+                        textBox.Document.Blocks.Add(new Paragraph { Margin = new Thickness(0) });
+                    var paragraph = (Paragraph)textBox.Document.Blocks.FirstBlock!;
+                    Run run = new Run("Running the model, please wait..." + "\n" + "\n");
+                    paragraph!.Inlines.Add(run);
+
+                    modelManager.selectLlama.OnLog += (type, message) =>
+                    {
+                        textBox.Dispatcher.Invoke(() =>
+                        {
+                            string normalized = message.ToLowerInvariant();
+                            run = new Run(message);
+                            
+                            if (normalized.Contains("error") || normalized.Contains("failed"))
+                            {
+                                run.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFF0000"));
+                            }
+                            else
+                            {
+                                run.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF464E6D"));
+                            }
+                            
+                            paragraph!.Inlines.Add(run);
+                            logScrollViewer.ScrollToEnd();
+                        }, System.Windows.Threading.DispatcherPriority.Render);
+                    };
+                    
+                    ResultDTO result = await Task.Run(() => modelManager.RunModel(runModel));
+
+                    if (result.IsSuccess)
+                    {
+                        run = new Run("\n" + "✔ Model run successfully.")
+                        {
+                            Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF006600"))
+                        };
+                        paragraph!.Inlines.Add(run);
+                        LoadModelBorder.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        run = new Run("\n" + "X Failed to run the model.")
+                        {
+                            Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFF0000"))
+                        };
+                        paragraph!.Inlines.Add(run);
+                        
+                    }
                 }
             }
         }

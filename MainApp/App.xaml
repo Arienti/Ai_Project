@@ -39,7 +39,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ScrollBar}">
-                        <Border CornerRadius="6" Width="10" BorderThickness="1" BorderBrush="{StaticResource PrimaryBg}">
+                        <Border x:Name="ScrollBarBorder" CornerRadius="6" Width="0" BorderThickness="1" BorderBrush="{StaticResource PrimaryBg}">
                             <Grid Background="Transparent">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>

@@ -27,19 +27,35 @@ namespace Ai_Project.Model_Manager
         public Action<long, long, double>? OnDownloadProgress;
         public Action<bool>? DownloadCancelled;
 
-        public FileStream _fileStream { get; set; }
+        public FileStream? _fileStream { get; set; }
+        public SelectLlama selectLlama;
+
+        private ModelDTO? RunningModel { get; set; } = null;
 
         public ModelManager()
         {
+            selectLlama = new SelectLlama();
+            
             AvailableModels = new List<HuggingFaceModelDTO>();
             huggingfaceService = new HuggingFaceService(this);
         }
 
-        public async Task RunModel(ModelDTO model)
+        public ModelDTO? GetRunningModel()
         {
-            SelectLlama selectLlama = new SelectLlama();
-            selectLlama.UnLoadModel();
-            await selectLlama.InitializeAsync(model);
+            return RunningModel;
+        }
+
+        public async Task<ResultDTO> RunModel(ModelDTO model)
+        {
+            //selectLlama.UnLoadModel();
+            ResultDTO result = await selectLlama.InitializeAsync(model);
+            
+            if (result.IsSuccess)
+            {
+                RunningModel = model;
+            }
+
+            return result;
         }
 
         public List<HuggingFaceModelDTO>? GetModels()
@@ -230,7 +246,7 @@ namespace Ai_Project.Model_Manager
 
         public async Task SaveModelFileAsync(byte[] buffer, int read, CancellationToken cancellationToken)
         {
-            await _fileStream.WriteAsync(buffer, 0, read, cancellationToken);
+            await _fileStream!.WriteAsync(buffer, 0, read, cancellationToken);
 
             Interlocked.Add(ref fileDownloaded, read);
             lastDataReceived = DateTime.UtcNow;

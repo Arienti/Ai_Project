@@ -61,8 +61,8 @@ namespace Ai_Project.Content
                 path = @"D:\Ai_Project\MainApp\bin\Debug\net8.0-windows\Models\bartowski\cognitivecomputations_Dolphin-Mistral-24B-Venice-Edition-GGUF\cognitivecomputations_Dolphin-Mistral-24B-Venice-Edition-IQ2_M.gguf"
             };
             string modelPath = @"C:\Users\Wizard\Downloads\Qwen3-8B-Q4_K_M.gguf";
-            runLlamaCpp = new RunLlamaSharp();
-            runLlamaCpp.InitializeAsync(model).Wait();
+           // runLlamaCpp = new RunLlamaSharp();
+           // runLlamaCpp.InitializeAsync(model).Wait();
         }
 
         public void Init()

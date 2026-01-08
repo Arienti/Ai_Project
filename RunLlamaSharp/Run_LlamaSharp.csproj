@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Get_Pc_Info\Get_Pc_Info.csproj" />
+    <ProjectReference Include="..\ModelsDTO\ModelsDTO.csproj" />
   </ItemGroup>
 
 </Project>

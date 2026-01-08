@@ -162,7 +162,10 @@
                                       VerticalAlignment="Stretch"
                                       HorizontalScrollBarVisibility="Disabled"
                                       VerticalScrollBarVisibility="Auto"
-                                      Background="Transparent">
+                                      Background="Transparent"
+                                      MouseEnter="Scroll_MouseEnter"
+                                      MouseLeave="Scroll_MouseLeave">
+                            
                             <StackPanel x:Name="AuthorsPanel" 
                                     Orientation="Vertical" 
                                     HorizontalAlignment="Stretch" 
@@ -216,7 +219,9 @@
                                   VerticalAlignment="Stretch"
                                   HorizontalScrollBarVisibility="Disabled"
                                   VerticalScrollBarVisibility="Auto"
-                              Background="Transparent">
+                                  Background="Transparent"
+                                  MouseEnter="Scroll_MouseEnter"
+                                  MouseLeave="Scroll_MouseLeave">
                         <StackPanel x:Name="ModelsPanel" 
                                     Orientation="Vertical" 
                                     HorizontalAlignment="Stretch" 
@@ -282,7 +287,9 @@
                                       HorizontalScrollBarVisibility="Disabled"
                                       VerticalScrollBarVisibility="Auto"
                                       Margin="3 3 3 8"
-                                      Background="Transparent">
+                                      Background="Transparent"
+                                      MouseEnter="Scroll_MouseEnter"
+                                      MouseLeave="Scroll_MouseLeave">
                             <StackPanel x:Name="ModelsDetailsPanel" 
                                         Orientation="Vertical" 
                                         HorizontalAlignment="Stretch" 
@@ -293,19 +300,40 @@
                     </Grid>
                 </Border>
                 
-                <Border Grid.Row="4" Grid.ColumnSpan="3" Margin="0 5 0 0" CornerRadius="8" Background="White">
+                <Border Grid.Row="4" Grid.ColumnSpan="3" Margin="0 5 0 0" CornerRadius="8" Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"> 
                     <Border.Effect>
                         <DropShadowEffect ShadowDepth="0" Opacity="0.5" BlurRadius="8" Color="Black" />
                     </Border.Effect>
-                    <TextBox x:Name="LogsTextBox"
-                             Foreground="#FF464E6D"
-                             BorderBrush="#FF464E6D"
-                             BorderThickness="0"
-                             IsReadOnly="True"
-                             Cursor="Arrow"
-                             Padding="8 0"
-                             VerticalAlignment="Center"
-                             ToolTip="{Binding ElementName=ModelsDownloadPathTextBox, Path=Text}"/>
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ScrollViewer x:Name="LogsScrollViewer" Style="{StaticResource ScrollViewerStyle}" Margin="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" MouseEnter="Scroll_MouseEnter" MouseLeave="Scroll_MouseLeave">
+                            <RichTextBox x:Name="LogsTextBox"
+                                         Foreground="#FF464E6D"
+                                         BorderThickness="0"
+                                         IsReadOnly="True"
+                                         Cursor="Arrow"
+                                         VerticalAlignment="Stretch">
+                            </RichTextBox>
+                        </ScrollViewer>
+
+                        <TextBlock Grid.Column="1"
+                                   Text="Clear"
+                                   FontFamily="Segoe UI Historic"
+                                   x:Name="ClearLogsTextBox"
+                                   Foreground="#FF2196F3"
+                                   TextDecorations="Underline"
+                                   Cursor="Hand"
+                                   HorizontalAlignment="Center"
+                                   FontSize="12"
+                                   Padding="5"
+                                   VerticalAlignment="Top"
+                                   PreviewMouseLeftButtonUp="ClearLogsTextBox_PreviewMouseLeftButtonUp"/>
+
+                    </Grid>
                 </Border>
             </Grid>
             

@@ -1,13 +1,15 @@
-﻿using Run_LlamaSharp.DTOs;
+﻿using ModelsDTO;
+using Run_LlamaSharp.DTOs;
+using System;
 using System.Threading.Tasks;
 
 namespace Run_LlamaSharp
 {
     public class SelectLlama : RunLlamaSharp
     {
-        public override async Task InitializeAsync(ModelDTO model)
+        public override async Task<ResultDTO> InitializeAsync(ModelDTO model)
         {
-            await base.InitializeAsync(model);
+            return await base.InitializeAsync(model);
         }
 
         public void UnLoadModel()

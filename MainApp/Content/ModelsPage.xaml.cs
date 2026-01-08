@@ -1,12 +1,13 @@
 ﻿using Ai_Project.Content.Controls;
 using Ai_Project.DTO;
 using Ai_Project.Model_Manager;
-using Ai_Project.Services;
 using Ai_Project.Tools;
 using Get_Pc_Info;
 using ModelsDTO;
 using System.Globalization;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Media.Animation;
 
 namespace Ai_Project.Content
 {
@@ -136,7 +137,7 @@ namespace Ai_Project.Content
                 sibling.size = await modelManager.GetFileSize(model._modelInfoDto.id, sibling.rfilename);
                 if (!sibling.rfilename.Contains("matrix"))
                 {
-                    FileControl fileControl = new FileControl(model, modelManager, LogsTextBox)
+                    FileControl fileControl = new FileControl(model, modelManager, LogsTextBox, LogsScrollViewer)
                     {
                         DataContext = sibling,
                         Tag = model
@@ -147,6 +148,74 @@ namespace Ai_Project.Content
             }
             ModelsDetailsScroll.Visibility = System.Windows.Visibility.Visible;
         }
+
+        private void ClearLogsTextBox_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            LogsTextBox.Document.Blocks.Clear();
+        }
+
+        private void LogsTextBox_PreviewKeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            double delta = LogsTextBox.ViewportHeight * 0.8;
+            switch (e.Key)
+            {
+                case System.Windows.Input.Key.Up:
+                case System.Windows.Input.Key.Down:
+                case System.Windows.Input.Key.Left:
+                case System.Windows.Input.Key.Right:
+                case System.Windows.Input.Key.Home:
+                case System.Windows.Input.Key.End:
+                    return; // allow scrolling/navigation
+            }
+
+            e.Handled = true; // block everything else
+        }
+
+        private void LogsTextBox_PreviewKey(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void Scroll_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (sender is not ScrollViewer scrollViewer)
+                return;
+
+            // Get the vertical scrollbar
+            if (scrollViewer.Template.FindName("PART_VerticalScrollBar", scrollViewer) is ScrollBar verticalScrollBar)
+            {
+                verticalScrollBar.ApplyTemplate(); // ensure template is applied
+
+                // Get the border inside the scrollbar template
+                if (verticalScrollBar.Template.FindName("ScrollBarBorder", verticalScrollBar) is Border border)
+                {
+                    double toValue = 10;
+                    var animation = new DoubleAnimation(toValue, TimeSpan.FromMilliseconds(100));
+                    border.BeginAnimation(Border.WidthProperty, animation);
+                }
+            }
+        }
+
+        private void Scroll_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (sender is not ScrollViewer scrollViewer)
+                return;
+
+            // Get the vertical scrollbar
+            if (scrollViewer.Template.FindName("PART_VerticalScrollBar", scrollViewer) is ScrollBar verticalScrollBar)
+            {
+                verticalScrollBar.ApplyTemplate(); // ensure template is applied
+
+                // Get the border inside the scrollbar template
+                if (verticalScrollBar.Template.FindName("ScrollBarBorder", verticalScrollBar) is Border border)
+                {
+                    double toValue = 0;
+                    var animation = new DoubleAnimation(toValue, TimeSpan.FromMilliseconds(100));
+                    border.BeginAnimation(Border.WidthProperty, animation);
+                }
+            }
+        }
+
 
         //private async void ModelsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         //{

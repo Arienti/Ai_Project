@@ -1,4 +1,5 @@
 ﻿using Run_LlamaSharp;
+using Run_LlamaSharp.DTOs;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -13,7 +14,13 @@ class TestLlamaSharp
         string modelPath = @"D:\Ai_Project\MainApp\bin\Debug\net8.0-windows\Models\LiquidAI\LiquidAI\LFM2-2.6B-GGUF\LFM2-2.6B-F16.gguf";
         Console.WriteLine("Loading model...");
         runLlamaCpp = new();
-        await runLlamaCpp.InitializeAsync(modelPath);
+        ModelDTO model = new ModelDTO
+        {
+            _id = "qwen-3-8b-q4_k_m",
+            id = "Qwen/Qwen-3-8B-Q4_K_M",
+            path = @"D:\Ai_Project\MainApp\bin\Debug\net8.0-windows\Models\bartowski\cognitivecomputations_Dolphin-Mistral-24B-Venice-Edition-GGUF\cognitivecomputations_Dolphin-Mistral-24B-Venice-Edition-IQ2_M.gguf"
+        };
+        await runLlamaCpp.InitializeAsync(model);
         Console.WriteLine("Chat started. Type 'exit' to quit.");
 
         while (true)

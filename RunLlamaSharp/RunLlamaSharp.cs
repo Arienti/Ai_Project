@@ -1,14 +1,16 @@
 ﻿using Get_Pc_Info;
 using LLama;
 using LLama.Common;
+using LLama.Native;
 using LLama.Sampling;
-using Microsoft.Extensions.Logging;
+using ModelsDTO;
 using Run_LlamaSharp.DTOs;
 using Run_LlamaSharp.Tools;
+using SharpDX;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -18,6 +20,7 @@ namespace Run_LlamaSharp
 {
     public class RunLlamaSharp
     {
+        private NativeLogConfig.LLamaLogCallback? _llamaCallback;
         protected LLamaWeights? modelWeights;
         protected LLamaContext? context;
         protected StatelessExecutor? executor;
@@ -41,10 +44,10 @@ namespace Run_LlamaSharp
             inferenceParams = null;
         }
 
-        public virtual async Task InitializeAsync(ModelDTO model)
+        public virtual async Task<ResultDTO> InitializeAsync(ModelDTO model)
         {
             SelectedModel = model;
-            await LoadModelAsync();
+            return await LoadModelAsync();
         }
 
         private int CalculateMaxContext(GgufMetadata meta)
@@ -90,13 +93,17 @@ namespace Run_LlamaSharp
             return (int)Math.Min(maxContext, meta.NCtx);
         }
 
-        private async Task LoadModelAsync()
+
+        private async Task<ResultDTO> LoadModelAsync()
         {
             ModelDTO model = GetModelSelected();
 
             if (model == null)
                 throw new InvalidOperationException("No model selected.");
-
+            _llamaCallback = new NativeLogConfig.LLamaLogCallback(LogHandler);
+           
+            NativeLogConfig.llama_log_set(_llamaCallback);
+            
             var ggufMetadata = GgufMetadata.ReadFromFile(model.path);
 
             int threads = GetPcInfo.CpuList.Sum(t => t.PhysicalCores);
@@ -112,41 +119,40 @@ namespace Run_LlamaSharp
                 MainGpu = gpuCount > 0 ? 0 : -1,
 
             };
-            modelWeights = LLamaWeights.LoadFromFile(modelParams);
-            context = modelWeights.CreateContext(modelParams);
-
-            executor = new StatelessExecutor(modelWeights, modelParams);
-
-            inferenceParams = new InferenceParams
+            try
             {
-                SamplingPipeline = new DefaultSamplingPipeline
+                modelWeights = LLamaWeights.LoadFromFile(modelParams);
+                context = modelWeights.CreateContext(modelParams);
+
+                executor = new StatelessExecutor(modelWeights, modelParams);
+
+                inferenceParams = new InferenceParams
                 {
-                    Temperature = 0.85f,
-                    TopP = 0.95f,
-                    TopK = 40,
-                    RepeatPenalty = 1.1f
-                },
-                DecodeSpecialTokens = true,
-                AntiPrompts = new List<string> { "[END_OF_RESPONSE]" }
-            };
+                    SamplingPipeline = new DefaultSamplingPipeline
+                    {
+                        Temperature = 0.85f,
+                        TopP = 0.95f,
+                        TopK = 40,
+                        RepeatPenalty = 1.1f
+                    },
+                    DecodeSpecialTokens = true,
+                    AntiPrompts = new List<string> { "[END_OF_RESPONSE]" }
+                };
 
-            var contextFields = context.GetType().GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            foreach (var f in contextFields)
-            {
-                OnLog?.Invoke($"{f.Name} =", $"{f.GetValue(context)}");
+                await Task.CompletedTask;
+
+                return ResultDTO.Success("Model loaded successfully.");
             }
-
-            // Optional: If you want state info
-            var stateProperty = context.GetType().GetProperty("State", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-            var state = stateProperty?.GetValue(context);
-            if (state != null)
+            catch (Exception ex)
             {
-                var stateFields = state.GetType().GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                foreach (var f in stateFields)
-                    OnLog?.Invoke($"{f.Name} =", $"{f.GetValue(state)}");
+                return ResultDTO.Fail($"Failed to load model: {ex.Message}");
             }
+        }
 
-            await Task.CompletedTask;
+        private void LogHandler(LLamaLogLevel level, string message)
+        {
+            // Do whatever you want with the log
+            OnLog?.Invoke($"[{level}]", $"{message}"); // or append to a TextBox in WPF
         }
 
         private readonly SemaphoreSlim _inferLock = new(1, 1);

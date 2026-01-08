@@ -10,7 +10,7 @@ namespace Ai_Project.Services
     public class HuggingFaceService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl = "https://huggingface.co/api/models?filter=gguf&pipeline_tag=text-generation&limit=20";
+        private readonly string _baseUrl = "https://huggingface.co/api/models?filter=gguf&pipeline_tag=text-generation&limit=30";
 
         private ModelManager modelManager;
 
